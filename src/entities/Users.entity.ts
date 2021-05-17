@@ -1,6 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { Posts } from './Posts.entity';
-import { Stars } from './Star_collections.entity';
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Posts } from "./Posts.entity";
+import { Stars } from "./Star_collections.entity";
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -18,17 +18,17 @@ export class Users {
   @Column()
   user_id: string;
 
-  @Column()
-  user_img: string;
+  @Column({ default: null })
+  user_img: string | null;
 
-  @Column()
-  user_job: string;
+  @Column({ default: null })
+  user_job: string | null;
 
-  @Column()
-  profile_comment: string;
+  @Column({ default: null })
+  profile_comment: string | null;
 
-  @Column()
-  scrap_planer: string;
+  @Column({ default: null })
+  scrap_planer: string | null;
 
   @OneToMany((type) => Posts, (posts) => posts.posts)
   users_post!: Users[];
