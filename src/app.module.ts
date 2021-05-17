@@ -8,6 +8,8 @@ import { Stars } from "./entities/Star_collections.entity";
 import { UsersModule } from "./users/users.module";
 import { PostsModule } from "./posts/posts.module";
 import { StarsModule } from "./stars/stars.module";
+import { UsersController } from "./users/users.controller";
+import { UsersService } from "./users/users.service";
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { StarsModule } from "./stars/stars.module";
       database: "dawnon",
       entities: [Users, Posts, Stars], // 사용할 entity의 클래스명을 넣어둔다.
       synchronize: true,
-      autoLoadEntities: false, // false가 안전.
+      autoLoadEntities: true, // false가 안전.
     }),
     UsersModule,
     PostsModule,
