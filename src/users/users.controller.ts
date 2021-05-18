@@ -10,7 +10,7 @@ import { getConnection, Repository } from "typeorm";
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post("signup")
   create(@Body() createUserDto: CreateUserDto): Promise<any> {
     return this.usersService.create(createUserDto);
   }
@@ -19,7 +19,7 @@ export class UsersController {
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
-
+  // /를 이용한 분기.
   @Get(":id")
   findOne(@Param("id") id: string): Promise<Users> {
     return this.usersService.findOne(id);
