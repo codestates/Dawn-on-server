@@ -1,19 +1,14 @@
 import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
-import { UsersModule } from "src/users/users.module";
+import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "src/entities/Users.entity";
-import { LocalStrategy } from "./guards/local.strategy";
-import { JwtStrategy } from "./guards/jwt.strategy";
-
-// 테스트 통과되면
-// 추후에 환경변수로 뺄것.
-const jwtConstants = {
-  secret: "secretKey",
-};
+import { JwtStrategy } from "src/guards/jwt.strategy";
+import { LocalStrategy } from "src/guards/local.strategy";
+import { UsersModule } from "src/users/users.module";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+import { jwtConstants } from "../contants";
 
 @Module({
   imports: [
