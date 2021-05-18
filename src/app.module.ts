@@ -10,6 +10,7 @@ import { PostsModule } from './posts/posts.module';
 import { StarsModule } from './stars/stars.module';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UsersService } from './users/users.service';
     UsersModule,
     PostsModule,
     StarsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
