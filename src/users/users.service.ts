@@ -2,7 +2,9 @@ import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
 import { Users } from '../entities/Users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { bcryptConstant } from '../contants';
+
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +14,7 @@ export class UsersService {
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
 
-  async create(createUserDto): Promise<void> {
+  async create(createUserDto): Promise<any> {
     const isExist = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
     });
@@ -23,6 +25,10 @@ export class UsersService {
         error: `상태코드:${HttpStatus.FORBIDDEN}`,
       });
     }
+    createUserDto.user_password = await hash(
+      createUserDto.user_password,
+      bcryptConstant.saltOrRounds,
+    );
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto,
     );
