@@ -6,8 +6,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { UsersModule } from "src/users/users.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "src/entities/Users.entity";
-import { LocalStrategy } from "./strategies/local.strategy";
-import { JwtStrategy } from "./strategies/jwt.strategy";
+import { LocalStrategy } from "./guards/local.strategy";
+import { JwtStrategy } from "./guards/jwt.strategy";
 
 // 테스트 통과되면
 // 추후에 환경변수로 뺄것.
