@@ -11,6 +11,7 @@ import { StarsModule } from "./stars/stars.module";
 import { UsersController } from "./users/users.controller";
 import { UsersService } from "./users/users.service";
 import { AuthModule } from "./auth/auth.module";
+import { RefreshToken } from "./entities/RefreshToken.entity";
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { AuthModule } from "./auth/auth.module";
       username: "root",
       password: "gksrnr12",
       database: "dawnon",
-      entities: [Users, Posts, Stars], // 사용할 entity의 클래스명을 넣어둔다.
+      entities: [Users, Posts, Stars, RefreshToken], // 사용할 entity의 클래스명을 넣어둔다.
       synchronize: true,
       autoLoadEntities: true, // false가 안전.
     }),
