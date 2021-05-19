@@ -58,7 +58,7 @@ export class TokenService {
 
     const opts = {
       jwtid: String(token.id),
-      secret: 'apple',
+      secret: process.env.REFRESH_TOKEN_SECRET,
       expiresIn: '30d',
     };
     return this.jwtService.sign(payload, opts);
@@ -160,7 +160,7 @@ export class TokenService {
     const payload = { user_id: user.user_id, user: user };
 
     const opts = {
-      secret: 'apple',
+      secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: '2h',
     };
     return this.jwtService.sign(payload, opts);
@@ -170,7 +170,7 @@ export class TokenService {
   async resolveAccessToken(encoded: string) {
     try {
       return this.jwtService.verify(encoded, {
-        secret: 'apple',
+        secret: process.env.ACCESS_TOKEN_SECRET,
       });
     } catch (e) {
       return null;
