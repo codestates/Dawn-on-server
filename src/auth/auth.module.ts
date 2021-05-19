@@ -9,6 +9,7 @@ import { UsersModule } from "src/users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { jwtConstants } from "../contants";
+/* import { GoogleStrategy } from "src/guards/google.strategy"; */
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { jwtConstants } from "../contants";
     }),
     TypeOrmModule.forFeature([Users]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy /* , GoogleStrategy */],
   controllers: [AuthController],
 })
 export class AuthModule {}
