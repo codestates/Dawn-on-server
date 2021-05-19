@@ -11,12 +11,10 @@ import { Users } from "./Users.entity";
 
 @Entity()
 export class RefreshToken {
-  @PrimaryGeneratedColumn("increment")
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Users, (user) => user.refreshToken, {
-    onDelete: "CASCADE",
-  })
+  @OneToOne(() => Users, (user) => user.refreshToken, { onDelete: "CASCADE" })
   @JoinColumn()
   user: Users;
 

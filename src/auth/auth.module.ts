@@ -9,7 +9,8 @@ import { UsersModule } from "src/users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { jwtConstants } from "../contants";
-/* import { GoogleStrategy } from "src/guards/google.strategy"; */
+import { TokenService } from "./token.service";
+import { RefreshToken } from "src/entities/RefreshToken.entity";
 
 @Module({
   imports: [
@@ -17,11 +18,13 @@ import { jwtConstants } from "../contants";
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: "60s" },
+      signOptions: { expiresIn: "500s" },
     }),
     TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([RefreshToken]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy /* , GoogleStrategy */],
+  providers: [AuthService, LocalStrategy, JwtStrategy, TokenService],
   controllers: [AuthController],
+  exports: [TokenService],
 })
 export class AuthModule {}

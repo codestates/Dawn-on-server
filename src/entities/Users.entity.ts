@@ -37,12 +37,12 @@ export class Users {
   @Column({ default: null })
   scrap_planer: string | null;
 
+  @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshToken: RefreshToken;
+
   @OneToMany((type) => Posts, (posts) => posts.posts)
   users_post!: Users[];
 
   @OneToMany((type) => Stars, (stars) => stars.stars)
   users_star!: Users[];
-
-  @OneToOne((type) => RefreshToken, (refreshToken) => refreshToken.user)
-  refreshToken: RefreshToken;
 }

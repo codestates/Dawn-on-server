@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "./entities/Users.entity";
 import { Posts } from "./entities/Posts.entity";
 import { Stars } from "./entities/Star_collections.entity";
+
 import { UsersModule } from "./users/users.module";
 import { PostsModule } from "./posts/posts.module";
 import { StarsModule } from "./stars/stars.module";
@@ -12,6 +13,7 @@ import { UsersController } from "./users/users.controller";
 import { UsersService } from "./users/users.service";
 import { AuthModule } from "./auth/auth.module";
 import { RefreshToken } from "./entities/RefreshToken.entity";
+import { TokenService } from "./auth/token.service";
 
 @Module({
   imports: [
