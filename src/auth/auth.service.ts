@@ -52,6 +52,19 @@ export class AuthService {
     }
   }
 
+  /*   async createRefreshToken(user: Users): Promise<string> {
+    const token: RefreshToken = await this.createRefreshToken(user);
+    const payload = { email: user.email, sub: user.id };
+
+    const opts = {
+      jwtid: String(token.id),
+      secret: process.env.REFRESH_TOKEN_SECRET,
+      expiresIn: "30d",
+    };
+    return this.jwtService.sign(payload, opts);
+  } */
+
+  // user = req.user
   async login(user: any) {
     const payload = {
       user_id: user.user_id,
@@ -63,9 +76,25 @@ export class AuthService {
       profile_comment: user.profile_comment,
       scrap_planer: user.scrap_planer,
     };
+    /*     const  */
     // console.log(payload);
     return {
       accessToken: this.jwtService.sign(payload),
     };
   }
+
+  async googleSignin(req) {
+    if (!req.user) {
+      return "No user from google";
+    } else {
+      return {
+        message: "User Info from Google",
+        user: req.user,
+      };
+    }
+  }
+
+  async googleSigninCallback() {}
+
+  async kakaoSignin() {}
 }
