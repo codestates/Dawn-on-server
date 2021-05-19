@@ -43,6 +43,10 @@ export class UsersService {
     return this.usersRepository.findOne({ user_id: id });
   }
 
+  findId(id: number): Promise<Users> {
+    return this.usersRepository.findOne({ id: id });
+  }
+
   async update(createUserDto): Promise<void> {
     const newUsers = await this.usersRepository.findOne(createUserDto.id);
     newUsers.user_nickname = createUserDto.user_nickname;
