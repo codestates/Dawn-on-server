@@ -1,6 +1,13 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+} from "typeorm";
 import { Posts } from "./Posts.entity";
 import { Stars } from "./Star_collections.entity";
+import { RefreshToken } from "./RefreshToken.entity";
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -35,4 +42,7 @@ export class Users {
 
   @OneToMany((type) => Stars, (stars) => stars.stars)
   users_star!: Users[];
+
+  @OneToOne((type) => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshToken: RefreshToken;
 }
