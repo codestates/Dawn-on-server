@@ -1,6 +1,6 @@
 export const jwtConstants = {
-  secret: 'secretKey',
+  secret: process.env.JWTCONSTANTS,
 };
 export const bcryptConstant = {
-  saltOrRounds: 10,
+  saltOrRounds: process.env.SALTORROUNDS,
 };
