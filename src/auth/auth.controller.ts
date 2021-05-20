@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { LocalAuthGuard } from "src/guards/local-auth.guard";
+import { GoogleAuthGuard } from "src/guards/google-auth.guard";
 import { UsersService } from "src/users/users.service";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
@@ -61,5 +62,31 @@ export class AuthController {
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
     return "로그아웃 되었습니다.";
+  }
+
+  @Get("google")
+  @UseGuards(GoogleAuthGuard)
+  googleLogin() {
+    return;
+  }
+
+  @Get("google/redirect")
+  @UseGuards(GoogleAuthGuard)
+  async googleLoginCallback(
+    @Req() req,
+    @Res({ passthrough: true }) res
+  ): Promise<any> {
+    const {
+      user,
+      tokens: { accessToken, refreshToken },
+    } = req.user;
+    res.cookie("refreshToken", refreshToken, {
+      domain: "netfreview.com",
+      path: "/",
+      secure: true,
+      httpOnly: true,
+      sameSite: "None",
+    });
+    return res.redirect(`http://localhost:3000/oauth/?token=${accessToken}`);
   }
 }

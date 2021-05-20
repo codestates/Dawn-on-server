@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -14,6 +15,7 @@ import { RefreshToken } from "src/entities/RefreshToken.entity";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ envFilePath: ".env" }),
     UsersModule,
     PassportModule,
     JwtModule.register({

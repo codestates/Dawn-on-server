@@ -5,16 +5,25 @@ import { Users } from "src/entities/Users.entity";
 import { Repository } from "typeorm";
 import { CreateLoginDto } from "../dtos/create-login.dto";
 import { compare } from "bcrypt";
+import { CreateUserDto } from "src/dtos/create-user.dto";
+import { UsersService } from "src/users/users.service";
+import { TokenService } from "./token.service";
+import { RefreshToken } from "src/entities/RefreshToken.entity";
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Users)
     private usersRepository: Repository<Users>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private usersService: UsersService,
+
+    @InjectRepository(RefreshToken)
+    private tokenService: TokenService
   ) {
     this.usersRepository = usersRepository;
     this.jwtService = jwtService;
+    this.usersService = usersService;
   }
 
   async validateUser(user_id: string, user_password: string): Promise<any> {
@@ -65,7 +74,7 @@ export class AuthService {
   } */
 
   // user = req.user
-  async login(user: any) {
+  async signIn(user: any) {
     const payload = {
       user_id: user.user_id,
       //   user_password: user.user_password,
@@ -83,18 +92,18 @@ export class AuthService {
     };
   }
 
-  async googleSignin(req) {
-    if (!req.user) {
-      return "No user from google";
-    } else {
-      return {
-        message: "User Info from Google",
-        user: req.user,
-      };
+  async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
+    const { email } = userProfile;
+    let user = await this.usersService.findOne(`${email}[AUTH]`);
+
+    if (!user) {
+      const newUser = new Users();
+      newUser.user_id = `${email}[AUTH]`;
+      newUser.user_nickname = `${email}`; // 초기 닉네임은 그냥 아이디로.
+      user = await this.usersService.create(newUser);
     }
+    const accessToken = await this.tokenService.generateAccessToken(user);
+    const refreshToken = await this.tokenService.generateRefreshToken(user);
+    return { user, tokens: { accessToken, refreshToken } };
   }
-
-  async googleSigninCallback() {}
-
-  async kakaoSignin() {}
 }

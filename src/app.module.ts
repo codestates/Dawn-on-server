@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -17,13 +18,14 @@ import { TokenService } from "./auth/token.service";
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: "mysql",
-      host: "localhost",
+      host: process.env.DATABASE_HOST,
       port: 3306,
-      username: "root",
-      password: "gksrnr12",
-      database: "dawnon",
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [Users, Posts, Stars, RefreshToken], // 사용할 entity의 클래스명을 넣어둔다.
       synchronize: true,
       autoLoadEntities: true, // false가 안전.
