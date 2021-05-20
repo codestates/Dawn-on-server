@@ -26,10 +26,13 @@ export class UsersService {
         error: `상태코드:${HttpStatus.FORBIDDEN}`,
       });
     }
+    //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
       bcryptConstant.saltOrRounds
     );
+    // 해싱된 패스워드는 리턴 하지 않고, DB에 바로 저장 (노출되면 안되기 때문에)
+    // 패스워드를 제외한 결과값만 리턴
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto
     );

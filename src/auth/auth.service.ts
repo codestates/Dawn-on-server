@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "src/entities/Users.entity";
 import { Repository } from "typeorm";
 import { CreateLoginDto } from "../dtos/create-login.dto";
-import { compare } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { CreateUserDto } from "src/dtos/create-user.dto";
 import { UsersService } from "src/users/users.service";
 import { TokenService } from "./token.service";
@@ -93,13 +93,16 @@ export class AuthService {
   }
 
   async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
-    const { email } = userProfile;
-    let user = await this.usersService.findOne(`${email}[AUTH]`);
+    const { user_id, profileUrl } = userProfile;
+    let user = await this.usersService.findOne(`${user_id}[AUTH]`);
 
     if (!user) {
       const newUser = new Users();
-      newUser.user_id = `${email}[AUTH]`;
-      newUser.user_nickname = `${email}`; // 초기 닉네임은 그냥 아이디로.
+      newUser.user_id = `${user_id}[AUTH]`;
+      newUser.user_password = await hash(Math.random().toString(36), 10);
+      newUser.user_nickname = `${user_id}`; // 초기 닉네임은 그냥 아이디로.
+      newUser.user_job = "전체";
+      newUser.user_img = profileUrl;
       user = await this.usersService.create(newUser);
     }
     const accessToken = await this.tokenService.generateAccessToken(user);

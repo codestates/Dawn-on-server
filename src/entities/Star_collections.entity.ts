@@ -14,6 +14,6 @@ export class Stars {
   @Column()
   path: string;
 
-  @ManyToOne((type) => Users, (users) => users.users_star)
-  stars!: Stars;
+  @ManyToOne((type) => Users, (users) => users.stars)
+  users!: Users;
 }

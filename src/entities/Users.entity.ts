@@ -14,9 +14,6 @@ export class Users {
   id: number;
 
   @Column()
-  user_name: string;
-
-  @Column()
   user_nickname: string;
 
   @Column()
@@ -34,15 +31,20 @@ export class Users {
   @Column({ default: null })
   profile_comment: string | null;
 
+  @Column()
+  provider: string;
+  // user.provider = 'local'
+  // user.provider = provider
+
   @Column({ default: null })
   scrap_planer: string | null;
 
   @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshToken: RefreshToken;
 
-  @OneToMany((type) => Posts, (posts) => posts.posts)
-  users_post!: Users[];
+  @OneToMany((type) => Posts, (posts) => posts.users)
+  posts!: number[];
 
-  @OneToMany((type) => Stars, (stars) => stars.stars)
-  users_star!: Users[];
+  @OneToMany((type) => Stars, (stars) => stars.users)
+  stars!: number[];
 }

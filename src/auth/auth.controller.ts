@@ -77,16 +77,18 @@ export class AuthController {
     @Res({ passthrough: true }) res
   ): Promise<any> {
     const {
-      user,
+      // user,
       tokens: { accessToken, refreshToken },
     } = req.user;
     res.cookie("refreshToken", refreshToken, {
-      domain: "netfreview.com",
+      domain: "localhost:3000",
       path: "/",
-      secure: true,
+      // secure: true,
       httpOnly: true,
-      sameSite: "None",
+      // sameSite: 'None',
     });
+
+    // 메인화면 구성에 따라서 수정.
     return res.redirect(`http://localhost:3000/oauth/?token=${accessToken}`);
   }
 }

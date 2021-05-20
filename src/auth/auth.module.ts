@@ -12,6 +12,7 @@ import { AuthService } from "./auth.service";
 import { jwtConstants } from "../contants";
 import { TokenService } from "./token.service";
 import { RefreshToken } from "src/entities/RefreshToken.entity";
+import { GoogleStrategy } from "src/guards/google.strategy";
 
 @Module({
   imports: [
@@ -25,7 +26,13 @@ import { RefreshToken } from "src/entities/RefreshToken.entity";
     TypeOrmModule.forFeature([Users]),
     TypeOrmModule.forFeature([RefreshToken]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, TokenService],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    TokenService,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
   exports: [TokenService],
 })
