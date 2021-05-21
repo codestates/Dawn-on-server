@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'apple',
+      secretOrKey: process.env.ACCESS_TOKEN_SECRET,
     });
     this.tokenService = tokenService;
   }
