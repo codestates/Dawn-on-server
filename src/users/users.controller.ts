@@ -10,11 +10,6 @@ import { getConnection, Repository } from 'typeorm';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto): Promise<any> {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
