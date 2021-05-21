@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
 import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -12,19 +21,16 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
     private tokenService: TokenService,
-  ) {}
+  ) {
+    this.authService = authService;
+    this.usersService = usersService;
+    this.tokenService = tokenService;
+  }
 
-  // @UseGuards(LocalAuthGuard)
-  // @Post('signin')
-  // async login(@Req() req) {
-  //   return this.authService.login(req.user);
-  // }
-  //   @Post('login')
-  //   async login(@Req() req) {
-  //     // const datas = this.authService.validateUser(req.body);
-  //     // console.log(datas);
-  //     return this.authService.validateUser(req.body);
-  //   }
+  @Post('singup')
+  create(@Body() createUserDto: CreateUserDto): Promise<any> {
+    return this.usersService.create(createUserDto);
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
@@ -49,9 +55,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Req() req) {
-    return req.user;
+  @Get('mypage')
+  async getProfile(@Req() req): Promise<any> {
+    const user = req.user;
+
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
