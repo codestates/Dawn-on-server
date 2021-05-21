@@ -30,7 +30,7 @@ export class AuthService {
     const user = await this.usersRepository.findOne({
       user_id: user_id,
     });
-    console.log(user);
+    //console.log(user);
     if (!user) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -38,14 +38,14 @@ export class AuthService {
         error: 'Forbidden',
       });
     }
-    console.log(user_password);
-    console.log(user.user_password);
+    //  console.log(user_password);
+    //   console.log(user.user_password);
     let isMatch: boolean;
     if (await compare(user_password, user.user_password)) {
       console.log('true');
       isMatch = true;
     } else {
-      console.log('false');
+      // console.log("false");
       isMatch = false;
     }
 
@@ -61,7 +61,7 @@ export class AuthService {
     }
   }
 
-  async login(user: any) {
+  /*   async login(user: any) {
     const payload = {
       user_id: user.user_id,
       //   user_password: user.user_password,
@@ -76,7 +76,7 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign(payload),
     };
-  }
+  } */
 
   async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
     const { user_id, profileUrl, user_job, user_nickname } = userProfile;
