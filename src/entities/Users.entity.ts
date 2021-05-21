@@ -31,8 +31,8 @@ export class Users {
   @Column({ default: null })
   profile_comment: string | null;
 
-  @Column()
-  provider: string;
+  @Column({ default: null })
+  provider!: string | null;
   // user.provider = 'local'
   // user.provider = provider
 
