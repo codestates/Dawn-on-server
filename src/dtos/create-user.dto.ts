@@ -13,6 +13,9 @@ export class CreateUserDto {
   @IsString()
   user_job: string;
 
+  @IsString()
+  provider: string;
+
   //   @IsString({default:null})
   //   user_img: string;
 

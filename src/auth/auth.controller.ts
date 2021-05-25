@@ -1,41 +1,36 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Req,
-  Res,
-  UseGuards,
-} from "@nestjs/common";
+import { Controller, Get, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { LocalAuthGuard } from "src/guards/local-auth.guard";
 import { GoogleAuthGuard } from "src/guards/google-auth.guard";
 import { UsersService } from "src/users/users.service";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
-import { CreateUserDto } from "src/dtos/create-user.dto";
 
-@Controller()
+@Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
     private tokenService: TokenService
-  ) {
-    this.authService = authService;
-    this.usersService = usersService;
-    this.tokenService = tokenService;
-  }
+  ) {}
 
-  @Post("singup")
-  create(@Body() createUserDto: CreateUserDto): Promise<any> {
-    return this.usersService.create(createUserDto);
-  }
+  // @UseGuards(LocalAuthGuard)
+  // @Post('signin')
+  // async login(@Req() req) {
+  //   return this.authService.login(req.user);
+  // }
+  //   @Post('login')
+  //   async login(@Req() req) {
+  //     // const datas = this.authService.validateUser(req.body);
+  //     // console.log(datas);
+  //     return this.authService.validateUser(req.body);
+  //   }
 
   @UseGuards(LocalAuthGuard)
   @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
+    console.log(req.headers);
 
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
@@ -55,11 +50,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("mypage")
-  async getProfile(@Req() req): Promise<any> {
-    const user = req.user;
-
-    return user;
+  @Get("profile")
+  getProfile(@Req() req) {
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -72,34 +65,37 @@ export class AuthController {
     return "로그아웃 되었습니다.";
   }
 
-  /*   @Get("google")
+  @Get("google")
   @UseGuards(GoogleAuthGuard)
-  googleLogin1() {}
+  async googleLogin(@Req() req) {}
 
-  @Get("google/callback")
+  @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
     @Res({ passthrough: true }) res
   ): Promise<any> {
-    const {
-      // user,
-      tokens: { accessToken, refreshToken },
-    } = req.user;
+    const { user } = req;
+    // console.log(req.headers);
+
+    const accessToken = await this.tokenService.generateAccessToken(user);
+    const refreshToken = await this.tokenService.generateRefreshToken(user);
+
     res.cookie("refreshToken", refreshToken, {
-      //domain: "localhost:3000",
+      // domain: 'localhost:3000',
       path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
 
-    // 메인화면 구성에 따라서 수정.
-    return res.redirect(`http://localhost:3000/explore/?token=${accessToken}`);
-  } */
+    // // 메인화면 구성에 따라서 수정.
 
-  @Post("/googlelogin")
-  googleLogin(@Body() bodyData, @Res() res): Promise<any> {
-    return this.authService.googleLogin(bodyData, res);
+    return res.redirect(`http://localhost:3000/explore/?token=${accessToken}`);
+
+    // return {
+    //   data: { accessToken },
+    //   message: '로그인이 성공적으로 되었습니다.',
+    // };
   }
 }

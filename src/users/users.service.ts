@@ -1,16 +1,16 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
-import { Users } from '../entities/Users.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
-import { bcryptConstant } from '../contants';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { Users } from "../entities/Users.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { getConnection, Repository } from "typeorm";
+import { bcryptConstant } from "../contants";
 
-import { hash } from 'bcrypt';
+import { hash } from "bcrypt";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    private usersRepository: Repository<Users>
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
 
@@ -27,10 +27,12 @@ export class UsersService {
     }
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      bcryptConstant.saltOrRounds,
+      bcryptConstant.saltOrRounds
     );
+    createUserDto.provider = "local";
+
     const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto,
+      createUserDto
     );
     return result;
   }
