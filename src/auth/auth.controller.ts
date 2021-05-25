@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
@@ -14,7 +22,11 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
     private tokenService: TokenService,
-  ) {}
+  ) {
+    this.authService = authService;
+    this.usersService = usersService;
+    this.tokenService = tokenService;
+  }
 
   @UseGuards(KakaoAuthGuard)
   @Get('kakao')
@@ -90,9 +102,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Req() req) {
-    return req.user;
+  @Get('mypage')
+  async getProfile(@Req() req): Promise<any> {
+    const user = req.user;
+
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)

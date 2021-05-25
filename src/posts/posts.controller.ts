@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateDataDto } from 'src/dtos/create-data.dto';
 import { Posts } from 'src/entities/Posts.entity';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { PostingAuthGuard } from 'src/guards/posting-auth.guard';
 import { UsersService } from 'src/users/users.service';
 import { PostsService } from './posts.service';
 
@@ -14,11 +24,12 @@ export class PostsController {
     this.postsService = postsService;
   }
 
+  @UseGuards(PostingAuthGuard)
   @Post('posting')
-  async posting(@Body() body) {
+  async posting(@Req() req) {
     const newPost = await this.postsService.posting(
-      body.user_id,
-      body.postdatas,
+      req.postData.user_id,
+      req.postData.postdatas,
     );
 
     return newPost;
