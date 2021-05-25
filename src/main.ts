@@ -13,9 +13,11 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
+    // preflightContinue: false,
+    // allowedHeaders: ['Content-Type', 'Authorization'],
   });
   app.use(cookieParser());
 

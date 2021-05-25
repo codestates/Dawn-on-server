@@ -29,6 +29,8 @@ export class UsersService {
       createUserDto.user_password,
       bcryptConstant.saltOrRounds,
     );
+    createUserDto.provider = 'local';
+
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto,
     );

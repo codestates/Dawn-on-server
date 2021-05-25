@@ -13,6 +13,7 @@ import { jwtConstants } from '../contants';
 import { TokenService } from './token.service';
 import { RefreshToken } from 'src/entities/RefreshToken.entity';
 import { GoogleStrategy } from 'src/guards/google.strategy';
+import { KakaoStrategy } from 'src/guards/kakao.strategy';
 
 @Module({
   imports: [
@@ -31,9 +32,10 @@ import { GoogleStrategy } from 'src/guards/google.strategy';
     LocalStrategy,
     JwtStrategy,
     TokenService,
+    KakaoStrategy,
     GoogleStrategy,
   ],
   controllers: [AuthController],
-  exports: [TokenService],
+  exports: [TokenService, AuthService, GoogleStrategy],
 })
 export class AuthModule {}

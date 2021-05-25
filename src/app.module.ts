@@ -15,6 +15,7 @@ import { UsersService } from './users/users.service';
 import { AuthModule } from './auth/auth.module';
 import { RefreshToken } from './entities/RefreshToken.entity';
 import { TokenService } from './auth/token.service';
+import { GoogleStrategy } from './guards/google.strategy';
 
 @Module({
   imports: [
