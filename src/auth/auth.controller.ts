@@ -30,6 +30,7 @@ export class AuthController {
   @Post('signin')
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
+    console.log(req.headers);
 
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
@@ -66,9 +67,7 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
-  googleLogin() {
-    return;
-  }
+  async googleLogin(@Req() req) {}
 
   @Get('google/redirect')
   @UseGuards(GoogleAuthGuard)
@@ -76,19 +75,27 @@ export class AuthController {
     @Req() req,
     @Res({ passthrough: true }) res,
   ): Promise<any> {
-    const {
-      // user,
-      tokens: { accessToken, refreshToken },
-    } = req.user;
+    const { user } = req;
+    // console.log(req.headers);
+
+    const accessToken = await this.tokenService.generateAccessToken(user);
+    const refreshToken = await this.tokenService.generateRefreshToken(user);
+
     res.cookie('refreshToken', refreshToken, {
-      domain: 'localhost:3000',
+      // domain: 'localhost:3000',
       path: '/',
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
 
-    // 메인화면 구성에 따라서 수정.
-    return res.redirect(`http://localhost:3000/oauth/?token=${accessToken}`);
+    // // 메인화면 구성에 따라서 수정.
+
+    return res.redirect(`http://localhost:3000/explore/?token=${accessToken}`);
+
+    // return {
+    //   data: { accessToken },
+    //   message: '로그인이 성공적으로 되었습니다.',
+    // };
   }
 }

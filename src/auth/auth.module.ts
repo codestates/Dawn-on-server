@@ -34,6 +34,6 @@ import { GoogleStrategy } from 'src/guards/google.strategy';
     GoogleStrategy,
   ],
   controllers: [AuthController],
-  exports: [TokenService],
+  exports: [TokenService, AuthService, GoogleStrategy],
 })
 export class AuthModule {}
