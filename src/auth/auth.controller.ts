@@ -6,37 +6,44 @@ import {
   Req,
   Res,
   UseGuards,
-} from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { LocalAuthGuard } from 'src/guards/local-auth.guard';
-import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
-import { KakaoAuthGuard } from 'src/guards/kakao-auth.guard';
-import { UsersService } from 'src/users/users.service';
-import { AuthService } from './auth.service';
-import { TokenService } from './token.service';
-import { KakaoStrategy } from 'src/guards/kakao.strategy';
+} from "@nestjs/common";
+import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
+import { LocalAuthGuard } from "src/guards/local-auth.guard";
+import { GoogleAuthGuard } from "src/guards/google-auth.guard";
+import { KakaoAuthGuard } from "src/guards/kakao-auth.guard";
+import { UsersService } from "src/users/users.service";
+import { AuthService } from "./auth.service";
+import { TokenService } from "./token.service";
+import { KakaoStrategy } from "src/guards/kakao.strategy";
+import { CreateUserDto } from "src/dtos/create-user.dto";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.authService = authService;
     this.usersService = usersService;
     this.tokenService = tokenService;
   }
 
+  @Post("signup")
+  async create(@Body() createUserDto: any): Promise<any> {
+    await this.usersService.create(createUserDto.userdto);
+    return;
+  }
+
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao')
+  @Get("kakao")
   async kakaoLogin(@Req() req) {}
 
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao/redirect')
+  @Get("kakao/redirect")
   async kakaoLoginRedirect(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -44,16 +51,16 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
@@ -74,7 +81,7 @@ export class AuthController {
   //   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('signin')
+  @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
     console.log(req.headers);
@@ -82,27 +89,27 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
     return {
       data: { accessToken },
-      message: '로그인이 성공적으로 되었습니다.',
+      message: "로그인이 성공적으로 되었습니다.",
     };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('mypage')
+  @Get("mypage")
   async getProfile(@Req() req): Promise<any> {
     const user = req.user;
 
@@ -110,24 +117,24 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('signout')
+  @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
     const { user } = req;
-    res.clearCookie('refreshToken');
+    res.clearCookie("refreshToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
-    return '로그아웃 되었습니다.';
+    return "로그아웃 되었습니다.";
   }
 
-  @Get('google')
+  @Get("google")
   @UseGuards(GoogleAuthGuard)
   async googleLogin(@Req() req) {}
 
-  @Get('google/redirect')
+  @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -135,16 +142,16 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
@@ -158,5 +165,12 @@ export class AuthController {
     // };
   }
 
+  @Get("signin/check")
+  async checkUser(@Req() req, @Res() res) {
+    res.status(200).send({
+      accessToken: req.cookies.accessToken,
+      refreshToken: req.cookies.refreshToken,
+    });
+  }
   // @Get('auth/')
 }
