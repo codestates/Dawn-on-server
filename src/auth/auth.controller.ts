@@ -66,8 +66,7 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-    res.redirect(`${process.env.REDIRECT_URI}/explore`);
-    return user.user_id;
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
   }
   // @UseGuards(LocalAuthGuard)
   // @Post('signin')
@@ -119,15 +118,15 @@ export class AuthController {
     return user;
   }
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
-    console.log(req.headers);
-    /*   const { user } = req;
+    //console.log(req.headers);
+    const { user } = req;
     res.clearCookie("refreshToken");
     res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
- */
+
     return "로그아웃 되었습니다.";
   }
 
@@ -162,8 +161,7 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-    res.redirect(`${process.env.REDIRECT_URI}/explore`);
-    return user.user_id;
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
 
     // return {
     //   data: { accessToken },
