@@ -30,6 +30,7 @@ import { GoogleStrategy } from "./guards/google.strategy";
       entities: [Users, Posts, Stars, RefreshToken], // 사용할 entity의 클래스명을 넣어둔다.
       synchronize: true,
       autoLoadEntities: true, // false가 안전.
+      charset: "utf8mb4",
     }),
     UsersModule,
     PostsModule,
