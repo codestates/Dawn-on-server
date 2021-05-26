@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Req, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { TokenService } from "src/auth/token.service";
@@ -21,7 +21,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     this.usersService = usersService;
   }
   async validate(payload: any) {
-    console.log(payload);
     /*        const accessTokenIat = this.tokenService.resolveAccessToken(
       payload.accessToken
     );

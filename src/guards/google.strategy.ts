@@ -31,16 +31,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     const users = {
       user_id: emails[0].value,
       user_nickname: displayName,
+      user_job: "전체",
       user_img: photos[0].value,
       accessToken,
       refreshToken,
     };
 
-    const { user, tokens } = await this.authService.validateOAuthLogin(
-      users,
-      "google",
-    );
+    const { user } = await this.authService.validateOAuthLogin(users, "google");
 
-    done(null, { user, tokens });
+    done(null, { user });
   }
 }

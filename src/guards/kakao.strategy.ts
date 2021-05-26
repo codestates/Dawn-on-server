@@ -28,13 +28,16 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
     // const { displayName, emails, photos, provider } = profile;
     console.log(profile);
     console.log(accessToken);
-    const user = {
+    const users = {
       user_id: profile._json.kakao_account.email,
       user_nickname: profile.displayName,
+      user_job: "기타",
       user_img: null,
       accessToken,
       refreshToken,
     };
+
+    const { user } = await this.authService.validateOAuthLogin(users, "kakao");
 
     done(null, { user });
   }
