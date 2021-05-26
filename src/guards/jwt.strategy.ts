@@ -20,20 +20,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     this.tokenService = tokenService;
     this.usersService = usersService;
   }
-  async validate(payload: any): Promise<CreateUserDto | null> {
+  async validate(payload: any) {
+    console.log(payload);
+    /*        const accessTokenIat = this.tokenService.resolveAccessToken(
+      payload.accessToken
+    );
+    console.log("decodedToken", accessTokenIat);
+    if (accessTokenIat === null) {
+      throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+    } */
+
     const { user_id } = payload;
     const user = await this.usersService.findOne(user_id);
     console.log(payload);
     if (!user) {
-      throw new UnauthorizedException("유효하지 않은 유저입니다.");
-    }
-
-    const accessTokenIat = this.tokenService.resolveAccessToken(
-      payload.accessToken
-    );
-
-    if (accessTokenIat === null) {
-      throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+      throw new UnauthorizedException("유효하지 않은 요청입니다.");
     }
 
     delete user.user_password;
