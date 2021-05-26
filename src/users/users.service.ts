@@ -14,7 +14,7 @@ const salt = process.env.SALTORROUNDS;
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    private usersRepository: Repository<Users>
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
 
@@ -31,12 +31,11 @@ export class UsersService {
     }
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      Number(salt),
+      Number(salt)
     );
-    createUserDto.provider = "local";
 
     const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto,
+      createUserDto
     );
     return result;
   }
