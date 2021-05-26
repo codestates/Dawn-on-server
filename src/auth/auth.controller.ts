@@ -52,6 +52,7 @@ export class AuthController {
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -65,8 +66,8 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
+    res.redirect(`${process.env.REDIRECT_URI}/explore`);
+    return user.user_id;
   }
   // @UseGuards(LocalAuthGuard)
   // @Post('signin')
@@ -90,6 +91,7 @@ export class AuthController {
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -103,6 +105,7 @@ export class AuthController {
     });
 
     return {
+      user_id: user.user_id,
       data: { accessToken },
       message: "로그인이 성공적으로 되었습니다.",
     };
@@ -116,13 +119,15 @@ export class AuthController {
     return user;
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
-    const { user } = req;
+    console.log(req.headers);
+    /*   const { user } = req;
     res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
-
+ */
     return "로그아웃 되었습니다.";
   }
 
@@ -143,6 +148,7 @@ export class AuthController {
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -156,8 +162,8 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
+    res.redirect(`${process.env.REDIRECT_URI}/explore`);
+    return user.user_id;
 
     // return {
     //   data: { accessToken },
