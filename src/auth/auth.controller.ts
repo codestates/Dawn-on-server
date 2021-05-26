@@ -66,7 +66,7 @@ export class AuthController {
 
     // // 메인화면 구성에 따라서 수정.
 
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
   }
   // @UseGuards(LocalAuthGuard)
   // @Post('signin')
@@ -157,7 +157,7 @@ export class AuthController {
 
     // // 메인화면 구성에 따라서 수정.
 
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
 
     // return {
     //   data: { accessToken },
