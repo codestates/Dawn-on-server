@@ -6,19 +6,18 @@ import {
   Req,
   Res,
   UseGuards,
-} from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { LocalAuthGuard } from 'src/guards/local-auth.guard';
-import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
-import { KakaoAuthGuard } from 'src/guards/kakao-auth.guard';
-import { UsersService } from 'src/users/users.service';
-import { AuthService } from './auth.service';
-import { TokenService } from './token.service';
-import { KakaoStrategy } from 'src/guards/kakao.strategy';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
-import { Users } from 'src/entities/Users.entity';
+} from "@nestjs/common";
+import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
+import { LocalAuthGuard } from "src/guards/local-auth.guard";
+import { GoogleAuthGuard } from "src/guards/google-auth.guard";
+import { KakaoAuthGuard } from "src/guards/kakao-auth.guard";
+import { UsersService } from "src/users/users.service";
+import { AuthService } from "./auth.service";
+import { TokenService } from "./token.service";
+import { KakaoStrategy } from "src/guards/kakao.strategy";
+import { CreateUserDto } from "src/dtos/create-user.dto";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -30,21 +29,18 @@ export class AuthController {
     this.tokenService = tokenService;
   }
 
-  @Post('signup')
-  async create(@Body() body): Promise<any> {
-    await this.usersService.create(body.userdto);
-
-    return {
-      message: '회원가입 성공',
-    };
+  @Post("signup")
+  async create(@Body() createUserDto: any): Promise<any> {
+    await this.usersService.create(createUserDto.userdto);
+    return;
   }
 
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao')
+  @Get("kakao")
   async kakaoLogin(@Req() req) {}
 
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao/redirect')
+  @Get("kakao/redirect")
   async kakaoLoginRedirect(
     @Req() req,
     @Res({ passthrough: true }) res,
@@ -55,22 +51,22 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
   }
   // @UseGuards(LocalAuthGuard)
   // @Post('signin')
@@ -85,7 +81,7 @@ export class AuthController {
   //   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('signin')
+  @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
     console.log(req.headers);
@@ -93,27 +89,29 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
     return {
+      user_id: user.user_id,
       data: { accessToken },
-      message: '로그인이 성공적으로 되었습니다.',
+      message: "로그인이 성공적으로 되었습니다.",
     };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('mypage')
+  @Get("mypage")
   async getProfile(@Req() req): Promise<any> {
     const user = req.user;
 
@@ -121,20 +119,22 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('signout')
+  @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
+    //console.log(req.headers);
     const { user } = req;
-    res.clearCookie('refreshToken');
+    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
-    return '로그아웃 되었습니다.';
+    return "로그아웃 되었습니다.";
   }
 
-  @Get('google')
+  @Get("google")
   @UseGuards(GoogleAuthGuard)
   async googleLogin(@Req() req) {}
 
-  @Get('google/redirect')
+  @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
@@ -146,24 +146,22 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(
-      `http://localhost:3000/explore?user_id=${user.user_id}`,
-    );
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
 
     // return {
     //   data: { accessToken },
@@ -171,11 +169,12 @@ export class AuthController {
     // };
   }
 
-  @Get('signin/check')
-  async checkSignin(@Req() req, @Res() res) {
+  @Get("signin/check")
+  async checkUser(@Req() req, @Res() res) {
     res.status(200).send({
       accessToken: req.cookies.accessToken,
       refreshToken: req.cookies.refreshToken,
     });
   }
+  // @Get('auth/')
 }

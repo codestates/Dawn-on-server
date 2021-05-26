@@ -1,14 +1,14 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
 // import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Posts } from 'src/entities/Posts.entity';
-import { Stars } from 'src/entities/Star_collections.entity';
-import { Users } from 'src/entities/Users.entity';
-import { StarsService } from 'src/stars/stars.service';
-import { UsersService } from 'src/users/users.service';
-import { Connection, Repository } from 'typeorm';
-import { CreateDataDto } from 'src/dtos/create-data.dto';
-import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Posts } from "src/entities/Posts.entity";
+import { Stars } from "src/entities/Star_collections.entity";
+import { Users } from "src/entities/Users.entity";
+import { StarsService } from "src/stars/stars.service";
+import { UsersService } from "src/users/users.service";
+import { Connection, Repository } from "typeorm";
+import { CreateDataDto } from "src/dtos/create-data.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class PostsService {
@@ -60,7 +60,7 @@ export class PostsService {
     }
 
     return {
-      message: '직업별 포스트 데이터 가져오기 완료',
+      message: "직업별 포스트 데이터 가져오기 완료",
       postDatas: postDatas,
     };
   }
@@ -84,6 +84,6 @@ export class PostsService {
 
     await this.postsRepository.save(newPostOBJ);
 
-    return { message: '포스팅 완료.', newpost: newPostOBJ };
+    return { message: "포스팅 완료.", newpost: newPostOBJ };
   }
 }

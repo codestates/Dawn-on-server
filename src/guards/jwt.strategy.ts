@@ -1,13 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TokenService } from 'src/auth/token.service';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
-import { UsersService } from 'src/users/users.service';
-import { config } from 'dotenv';
-
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { TokenService } from "src/auth/token.service";
+import { CreateUserDto } from "src/dtos/create-user.dto";
+import { UsersService } from "src/users/users.service";
+import { config } from "dotenv";
 config();
-
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -22,22 +20,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     this.tokenService = tokenService;
     this.usersService = usersService;
   }
-  async validate(payload: any): Promise<CreateUserDto | null> {
-    const accessTokenIat = this.tokenService.resolveAccessToken(
-      payload.accessToken,
+  async validate(payload: any) {
+    console.log(payload);
+    /*        const accessTokenIat = this.tokenService.resolveAccessToken(
+      payload.accessToken
     );
-
-    console.log('Decoded: ', accessTokenIat);
-
+    console.log("decodedToken", accessTokenIat);
     if (accessTokenIat === null) {
-      throw new UnauthorizedException('유효하지 않은 토큰입니다.');
-    }
+      throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+    } */
 
     const { user_id } = payload;
     const user = await this.usersService.findOne(user_id);
-
+    console.log(payload);
     if (!user) {
-      throw new UnauthorizedException('유효하지 않은 유저입니다.');
+      throw new UnauthorizedException("유효하지 않은 요청입니다.");
     }
 
     delete user.user_password;

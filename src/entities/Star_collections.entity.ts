@@ -4,8 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-} from 'typeorm';
-import { Users } from './Users.entity';
+} from "typeorm";
+import { Users } from "./Users.entity";
 @Entity()
 export class Stars {
   @PrimaryGeneratedColumn()

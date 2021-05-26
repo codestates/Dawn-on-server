@@ -1,9 +1,9 @@
-import { Body, Injectable, UnauthorizedException } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TokenService } from 'src/auth/token.service';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
-import { UsersService } from 'src/users/users.service';
+import { Body, Injectable, UnauthorizedException } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { ExtractJwt, Strategy } from "passport-jwt";
+import { TokenService } from "src/auth/token.service";
+import { CreateUserDto } from "src/dtos/create-user.dto";
+import { UsersService } from "src/users/users.service";
 @Injectable()
 export class PostingStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -23,7 +23,7 @@ export class PostingStrategy extends PassportStrategy(Strategy) {
     );
 
     if (accessTokenData === null) {
-      throw new UnauthorizedException('로그인이 필요합니다.');
+      throw new UnauthorizedException("로그인이 필요합니다.");
     }
 
     return { accessTokenData: accessTokenData, postData: body.postdatas };

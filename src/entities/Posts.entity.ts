@@ -1,13 +1,13 @@
-import { CreateDataDto } from 'src/dtos/create-data.dto';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { CreateDataDto } from "src/dtos/create-data.dto";
+import { CreateUserDto } from "src/dtos/create-user.dto";
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-} from 'typeorm';
-import { Users } from './Users.entity';
+} from "typeorm";
+import { Users } from "./Users.entity";
 @Entity()
 export class Posts {
   @PrimaryGeneratedColumn()

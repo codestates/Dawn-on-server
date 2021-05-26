@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
-import { Users } from '../entities/Users.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
-import { bcryptConstant } from '../contants';
-import { hash } from 'bcrypt';
-import { config } from 'dotenv';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { Users } from "../entities/Users.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { getConnection, Repository } from "typeorm";
+import { bcryptConstant } from "../contants";
+import { hash } from "bcrypt";
+import { config } from "dotenv";
 
 config();
 
@@ -33,7 +33,7 @@ export class UsersService {
       createUserDto.user_password,
       Number(salt),
     );
-    createUserDto.provider = 'local';
+    createUserDto.provider = "local";
 
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto,

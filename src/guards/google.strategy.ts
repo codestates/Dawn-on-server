@@ -1,10 +1,10 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import { config } from 'dotenv';
+import { PassportStrategy } from "@nestjs/passport";
+import { Strategy, VerifyCallback } from "passport-google-oauth20";
+import { config } from "dotenv";
 
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AuthService } from "src/auth/auth.service";
 
 config();
 
@@ -14,8 +14,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: 'http://localhost:4000/auth/google/redirect',
-      scope: ['email', 'profile'],
+      callbackURL: `${process.env.CALLBACK_URI}/auth/google/redirect`,
+      scope: ["email", "profile"],
     });
     this.authService = authService;
   }
@@ -28,7 +28,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   ): Promise<any> {
     const { displayName, emails, photos, provider } = profile;
     // console.log(profile);
-    const user = {
+    const users = {
       user_id: emails[0].value,
       user_nickname: displayName,
       user_img: photos[0].value,
@@ -36,11 +36,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       refreshToken,
     };
 
-    const { users, tokens } = await this.authService.validateOAuthLogin(
-      user,
-      'google',
+    const { user, tokens } = await this.authService.validateOAuthLogin(
+      users,
+      "google",
     );
 
-    done(null, { users, tokens });
+    done(null, { user, tokens });
   }
 }
