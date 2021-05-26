@@ -16,6 +16,9 @@ import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
 import { KakaoStrategy } from "src/guards/kakao.strategy";
 import { CreateUserDto } from "src/dtos/create-user.dto";
+import { config } from "dotenv";
+
+config();
 
 @Controller("auth")
 export class AuthController {
@@ -84,7 +87,7 @@ export class AuthController {
   @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
-    console.log(req.headers);
+    // console.log(req.headers);
 
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
