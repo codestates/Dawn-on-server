@@ -36,11 +36,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       refreshToken,
     };
 
-    done(null, { user });
+    const { users, tokens } = await this.authService.validateOAuthLogin(
+      user,
+      'google',
+    );
+
+    done(null, { users, tokens });
   }
 }
-
-// const { user, tokens } = await this.authService.validateOAuthLogin(
-//   users,
-//   'google',
-// );

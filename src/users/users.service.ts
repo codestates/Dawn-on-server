@@ -3,8 +3,12 @@ import { Users } from '../entities/Users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, Repository } from 'typeorm';
 import { bcryptConstant } from '../contants';
-
 import { hash } from 'bcrypt';
+import { config } from 'dotenv';
+
+config();
+
+const salt = process.env.SALTORROUNDS;
 
 @Injectable()
 export class UsersService {
@@ -27,7 +31,7 @@ export class UsersService {
     }
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      bcryptConstant.saltOrRounds,
+      Number(salt),
     );
     createUserDto.provider = 'local';
 

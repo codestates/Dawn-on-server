@@ -15,6 +15,8 @@ import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
 import { KakaoStrategy } from 'src/guards/kakao.strategy';
+import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { Users } from 'src/entities/Users.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +28,15 @@ export class AuthController {
     this.authService = authService;
     this.usersService = usersService;
     this.tokenService = tokenService;
+  }
+
+  @Post('signup')
+  async create(@Body() body): Promise<any> {
+    await this.usersService.create(body.userdto);
+
+    return {
+      message: '회원가입 성공',
+    };
   }
 
   @UseGuards(KakaoAuthGuard)
@@ -150,7 +161,9 @@ export class AuthController {
 
     // // 메인화면 구성에 따라서 수정.
 
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(
+      `http://localhost:3000/explore?user_id=${user.user_id}`,
+    );
 
     // return {
     //   data: { accessToken },
@@ -158,5 +171,11 @@ export class AuthController {
     // };
   }
 
-  // @Get('auth/')
+  @Get('signin/check')
+  async checkSignin(@Req() req, @Res() res) {
+    res.status(200).send({
+      accessToken: req.cookies.accessToken,
+      refreshToken: req.cookies.refreshToken,
+    });
+  }
 }
