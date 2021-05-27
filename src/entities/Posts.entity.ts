@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToOne,
 } from "typeorm";
+import { Todos } from "./Todos.entity";
 import { Users } from "./Users.entity";
 @Entity()
 export class Posts {
@@ -25,13 +26,10 @@ export class Posts {
   sticker: string;
 
   @Column()
-  box_color: string;
-
-  @Column()
   back_color: string;
 
   @Column()
-  learning_time: number;
+  today_learning_time: number;
 
   @Column()
   d_day: number;
@@ -39,9 +37,16 @@ export class Posts {
   @Column()
   comment: string;
 
+  @Column()
+  memo: string;
+  //상단에 쓰는 본인 글
+
   @Column({ default: null })
   thumbs_up: number | null;
 
   @ManyToOne((type) => Users, (users) => users.posts)
   users!: number;
+
+  @OneToMany((type) => Todos, (todos) => todos.posts)
+  todos!: number[];
 }
