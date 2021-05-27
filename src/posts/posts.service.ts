@@ -24,7 +24,7 @@ export class PostsService {
     private starsService: StarsService,
 
     @InjectRepository(Posts)
-    private postsRepository: Repository<Posts>,
+    private postsRepository: Repository<Posts>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -65,7 +65,7 @@ export class PostsService {
     };
   }
 
-  async posting(user_id: string, postdatas: CreateDataDto): Promise<any> {
+  async posting(user_id: string, postdatas: any): Promise<any> {
     const userId = await this.usersRepository.findOne({ user_id: user_id });
 
     const newPostOBJ = new Posts();
@@ -73,11 +73,8 @@ export class PostsService {
     newPostOBJ.date = new Date();
 
     newPostOBJ.tag = postdatas.tag;
-    newPostOBJ.sticker = postdatas.sticker;
-    newPostOBJ.box_color = postdatas.box_color;
     newPostOBJ.back_color = postdatas.back_color;
-    newPostOBJ.learning_time = postdatas.learning_time;
-    newPostOBJ.d_day = postdatas.d_day;
+    newPostOBJ.today_learning_time = postdatas.today_learning_time;
     newPostOBJ.comment = postdatas.comment;
     newPostOBJ.thumbs_up = postdatas.thumbs_up;
     newPostOBJ.users = userId.id;

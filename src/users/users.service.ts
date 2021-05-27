@@ -52,13 +52,19 @@ export class UsersService {
     return this.usersRepository.findOne({ id: id });
   }
 
-  async update(createUserDto): Promise<void> {
-    const newUsers = await this.usersRepository.findOne(createUserDto.id);
-    newUsers.user_nickname = createUserDto.user_nickname;
-    newUsers.user_img = createUserDto.user_img;
-    newUsers.user_job = createUserDto.user_job;
-    newUsers.user_password = createUserDto.user_password;
-    await this.usersRepository.save(newUsers);
+  async update(req): Promise<void> {
+    const { user_id, user_nickname, user_img, user_job, user_password } =
+      req.body;
+    const newUsers = await this.usersRepository.findOne({
+      user_id: user_id,
+    });
+    newUsers.user_nickname = user_nickname;
+    newUsers.user_img = user_img;
+    newUsers.user_job = user_job;
+    newUsers.user_password = await hash(user_password, Number(salt));
+    await this.usersRepository
+      .save(newUsers)
+      .then(() => "유저 정보가 수정되었습니다.");
   }
 
   async remove(id: string): Promise<void> {
