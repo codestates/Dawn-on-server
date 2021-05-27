@@ -52,7 +52,7 @@ export class UsersService {
     return this.usersRepository.findOne({ id: id });
   }
 
-  async update(req): Promise<void> {
+  async update(req): Promise<any> {
     const { user_id, user_nickname, user_img, user_job, user_password } =
       req.body;
     const newUsers = await this.usersRepository.findOne({
@@ -62,9 +62,9 @@ export class UsersService {
     newUsers.user_img = user_img;
     newUsers.user_job = user_job;
     newUsers.user_password = await hash(user_password, Number(salt));
-    await this.usersRepository
-      .save(newUsers)
-      .then(() => "유저 정보가 수정되었습니다.");
+    const userData = await this.usersRepository.save(newUsers);
+
+    return userData;
   }
 
   async remove(id: string): Promise<void> {
