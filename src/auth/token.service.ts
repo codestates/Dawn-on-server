@@ -1,11 +1,11 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { TokenExpiredError } from 'jsonwebtoken';
-import { RefreshToken } from 'src/entities/RefreshToken.entity';
-import { Users } from 'src/entities/Users.entity';
-import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { TokenExpiredError } from "jsonwebtoken";
+import { RefreshToken } from "src/entities/RefreshToken.entity";
+import { Users } from "src/entities/Users.entity";
+import { UsersService } from "src/users/users.service";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class TokenService {
@@ -16,7 +16,7 @@ export class TokenService {
     private usersService: UsersService,
 
     @InjectRepository(RefreshToken)
-    private refreshRepository: Repository<RefreshToken>,
+    private refreshRepository: Repository<RefreshToken>
   ) {
     this.refreshRepository = refreshRepository;
     this.usersRepository = usersRepository;
@@ -34,16 +34,16 @@ export class TokenService {
     refreshToken.user = user;
 
     const existedToken = await this.refreshRepository
-      .createQueryBuilder('refreshToken')
-      .leftJoinAndSelect('refreshToken.user', 'user')
-      .where('user.id = :id', { id: user.id })
+      .createQueryBuilder("refreshToken")
+      .leftJoinAndSelect("refreshToken.user", "user")
+      .where("user.id = :id", { id: user.id })
       .getOne();
 
     if (existedToken) {
       await this.refreshRepository
-        .createQueryBuilder('refreshToken')
+        .createQueryBuilder("refreshToken")
         .delete()
-        .where('id = :id', { id: existedToken.id })
+        .where("id = :id", { id: existedToken.id })
         .execute();
     }
 
@@ -59,14 +59,14 @@ export class TokenService {
     const opts = {
       jwtid: String(token.id),
       secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: '30d',
+      expiresIn: "30d",
     };
     return this.jwtService.sign(payload, opts);
   }
 
   // 유요한 리프레쉬 토큰인지 확인.
   async resolveRefreshToken(
-    encoded: string,
+    encoded: string
   ): Promise<{ user: Users; token: RefreshToken }> {
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
@@ -74,8 +74,8 @@ export class TokenService {
     if (!token) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: ['토큰이 존재하지 않습니다.'],
-        error: 'Forbidden',
+        message: ["토큰이 존재하지 않습니다."],
+        error: "Forbidden",
       });
     }
 
@@ -84,8 +84,8 @@ export class TokenService {
     if (!user) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: ['유효하지 않은 토큰입니다.'],
-        error: 'Forbidden',
+        message: ["유효하지 않은 토큰입니다."],
+        error: "Forbidden",
       });
     }
 
@@ -102,14 +102,14 @@ export class TokenService {
       if (e instanceof TokenExpiredError) {
         throw new ForbiddenException({
           statusCode: HttpStatus.FORBIDDEN,
-          message: ['Refresh token expired'],
-          error: 'Forbidden',
+          message: ["Refresh token expired"],
+          error: "Forbidden",
         });
       } else {
         throw new ForbiddenException({
           statusCode: HttpStatus.FORBIDDEN,
-          message: ['유효하지 않은 토큰입니다.'],
-          error: 'Forbidden',
+          message: ["유효하지 않은 토큰입니다."],
+          error: "Forbidden",
         });
       }
     }
@@ -122,8 +122,8 @@ export class TokenService {
     if (!subId) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: ['유효하지 않은 토큰입니다.'],
-        error: 'Forbidden',
+        message: ["유효하지 않은 토큰입니다."],
+        error: "Forbidden",
       });
     }
 
@@ -132,14 +132,14 @@ export class TokenService {
 
   // 만료된 토큰인지 확인
   async getStoredTokenFromRefreshTokenPayload(
-    payload: any,
+    payload: any
   ): Promise<RefreshToken> {
     const tokenId = payload.user_id;
     if (!tokenId) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: ['Refresh token expired'],
-        error: 'Forbidden',
+        message: ["Refresh token expired"],
+        error: "Forbidden",
       });
     }
     return this.findTokenById(tokenId);
@@ -148,10 +148,10 @@ export class TokenService {
   // 리프레쉬토큰 삭제(유효기간 만료된 토큰 삭제)
   async deleteRefreshTokenFromUser(user: Users): Promise<void> {
     await this.refreshRepository
-      .createQueryBuilder('refreshToken')
-      .leftJoinAndSelect('refreshToken.user', 'user')
+      .createQueryBuilder("refreshToken")
+      .leftJoinAndSelect("refreshToken.user", "user")
       .delete()
-      .where('user.id = :id', { id: user.id })
+      .where("user.id = :id", { id: user.id })
       .execute();
   }
 
@@ -161,7 +161,7 @@ export class TokenService {
 
     const opts = {
       secret: process.env.ACCESS_TOKEN_SECRET,
-      expiresIn: '2h',
+      expiresIn: "2h",
     };
     return this.jwtService.sign(payload, opts);
   }
@@ -179,7 +179,7 @@ export class TokenService {
 
   // 만료 엑세스 토큰 리프레쉬 토큰으로 재발급
   async createAccessTokenFromRefreshToken(
-    refresh: string,
+    refresh: string
   ): Promise<{ token: string; user: Users }> {
     const { user } = await this.resolveRefreshToken(refresh);
 

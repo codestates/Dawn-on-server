@@ -6,22 +6,22 @@ import {
   Req,
   Res,
   UseGuards,
-} from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { LocalAuthGuard } from 'src/guards/local-auth.guard';
-import { GoogleAuthGuard } from 'src/guards/google-auth.guard';
-import { KakaoAuthGuard } from 'src/guards/kakao-auth.guard';
-import { UsersService } from 'src/users/users.service';
-import { AuthService } from './auth.service';
-import { TokenService } from './token.service';
-import { KakaoStrategy } from 'src/guards/kakao.strategy';
+} from "@nestjs/common";
+import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
+import { LocalAuthGuard } from "src/guards/local-auth.guard";
+import { GoogleAuthGuard } from "src/guards/google-auth.guard";
+import { KakaoAuthGuard } from "src/guards/kakao-auth.guard";
+import { UsersService } from "src/users/users.service";
+import { AuthService } from "./auth.service";
+import { TokenService } from "./token.service";
+import { KakaoStrategy } from "src/guards/kakao.strategy";
 
 @Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.authService = authService;
     this.usersService = usersService;
@@ -29,14 +29,14 @@ export class AuthController {
   }
 
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao')
+  @Get("kakao")
   async kakaoLogin(@Req() req) {}
 
   @UseGuards(KakaoAuthGuard)
-  @Get('kakao/redirect')
+  @Get("kakao/redirect")
   async kakaoLoginRedirect(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -44,16 +44,16 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
@@ -89,9 +89,9 @@ export class AuthController {
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
@@ -102,11 +102,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('mypage')
-  async getProfile(@Req() req): Promise<any> {
-    const user = req.user;
-
-    return user;
+  @Get("profile")
+  getProfile(@Req() req) {
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -135,16 +133,16 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
     });
-    res.cookie('accessToken', accessToken, {
+    res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      path: '/',
+      path: "/",
       httpOnly: true,
     });
 
