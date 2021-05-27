@@ -33,7 +33,6 @@ export class UsersService {
       createUserDto.user_password,
       Number(salt),
     );
-    createUserDto.provider = "local";
 
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto,
