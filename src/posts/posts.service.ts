@@ -74,6 +74,7 @@ export class PostsService {
 
     newPostOBJ.tag = postdatas.tag;
     newPostOBJ.back_color = postdatas.back_color;
+    newPostOBJ.sticker = postdatas.sticker;
     newPostOBJ.today_learning_time = postdatas.today_learning_time;
     newPostOBJ.comment = postdatas.comment;
     newPostOBJ.thumbs_up = postdatas.thumbs_up;
