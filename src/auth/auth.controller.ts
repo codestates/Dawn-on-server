@@ -125,7 +125,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Patch("mypage")
   async patchProfile(@Req() req): Promise<any> {
-    return this.usersService.update(req);
+    const updateUser = this.usersService.update(req);
+    return { data: updateUser, message: "유저 정보 업데이트 완료" };
   }
 
   @UseGuards(JwtAuthGuard)
