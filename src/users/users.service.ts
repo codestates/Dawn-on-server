@@ -3,8 +3,12 @@ import { Users } from "../entities/Users.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { getConnection, Repository } from "typeorm";
 import { bcryptConstant } from "../contants";
-
 import { hash } from "bcrypt";
+import { config } from "dotenv";
+
+config();
+
+const salt = process.env.SALTORROUNDS;
 
 @Injectable()
 export class UsersService {
@@ -29,9 +33,8 @@ export class UsersService {
     //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      bcryptConstant.saltOrRounds
+      Number(salt)
     );
-    createUserDto.provider = "local";
 
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto
@@ -51,13 +54,19 @@ export class UsersService {
     return this.usersRepository.findOne({ id: id });
   }
 
-  async update(createUserDto): Promise<void> {
-    const newUsers = await this.usersRepository.findOne(createUserDto.id);
-    newUsers.user_nickname = createUserDto.user_nickname;
-    newUsers.user_img = createUserDto.user_img;
-    newUsers.user_job = createUserDto.user_job;
-    newUsers.user_password = createUserDto.user_password;
-    await this.usersRepository.save(newUsers);
+  async update(req): Promise<any> {
+    const { user_id, user_nickname, user_img, user_job, user_password } =
+      req.body;
+    const newUsers = await this.usersRepository.findOne({
+      user_id: user_id,
+    });
+    newUsers.user_nickname = user_nickname;
+    newUsers.user_img = user_img;
+    newUsers.user_job = user_job;
+    newUsers.user_password = await hash(user_password, Number(salt));
+    const userData = await this.usersRepository.save(newUsers);
+
+    return userData;
   }
 
   async remove(id: string): Promise<void> {

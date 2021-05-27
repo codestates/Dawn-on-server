@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   Res,
@@ -15,6 +16,10 @@ import { UsersService } from "src/users/users.service";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
 import { KakaoStrategy } from "src/guards/kakao.strategy";
+import { CreateUserDto } from "src/dtos/create-user.dto";
+import { config } from "dotenv";
+
+config();
 
 @Controller("auth")
 export class AuthController {
@@ -26,6 +31,12 @@ export class AuthController {
     this.authService = authService;
     this.usersService = usersService;
     this.tokenService = tokenService;
+  }
+
+  @Post("signup")
+  async create(@Body() createUserDto: any): Promise<any> {
+    await this.usersService.create(createUserDto.userdto);
+    return;
   }
 
   @UseGuards(KakaoAuthGuard)
@@ -45,6 +56,7 @@ export class AuthController {
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -58,8 +70,7 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
   }
   // @UseGuards(LocalAuthGuard)
   // @Post('signin')
@@ -77,12 +88,13 @@ export class AuthController {
   @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
-    console.log(req.headers);
+    // console.log(req.headers);
 
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -96,22 +108,34 @@ export class AuthController {
     });
 
     return {
+      user_id: user.user_id,
       data: { accessToken },
       message: "로그인이 성공적으로 되었습니다.",
     };
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get("profile")
-  getProfile(@Req() req) {
-    return req.user;
+  @Get("mypage")
+  async getProfile(@Req() req): Promise<any> {
+    const user = req.user;
+
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch("mypage")
+  async patchProfile(@Req() req): Promise<any> {
+    const updateUser = this.usersService.update(req);
+    return { data: updateUser, message: "유저 정보 업데이트 완료" };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
+    //console.log(req.headers);
     const { user } = req;
     res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
     return "로그아웃 되었습니다.";
@@ -134,6 +158,7 @@ export class AuthController {
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
       // domain: 'localhost:3000',
       path: "/",
       // secure: true,
@@ -147,8 +172,7 @@ export class AuthController {
     });
 
     // // 메인화면 구성에 따라서 수정.
-
-    return res.redirect(`http://localhost:3000/explore`);
+    return res.redirect(`${process.env.REDIRECT_URI}/explore`);
 
     // return {
     //   data: { accessToken },
@@ -156,5 +180,12 @@ export class AuthController {
     // };
   }
 
+  @Get("signin/check")
+  async checkUser(@Req() req, @Res() res) {
+    res.status(200).send({
+      accessToken: req.cookies.accessToken,
+      refreshToken: req.cookies.refreshToken,
+    });
+  }
   // @Get('auth/')
 }

@@ -14,11 +14,11 @@ import { RefreshToken } from "src/entities/RefreshToken.entity";
 export class AuthService {
   constructor(
     @InjectRepository(Users)
+    @InjectRepository(RefreshToken)
     private usersRepository: Repository<Users>,
     private jwtService: JwtService,
     private usersService: UsersService,
 
-    @InjectRepository(RefreshToken)
     private tokenService: TokenService
   ) {
     this.usersRepository = usersRepository;
@@ -94,9 +94,7 @@ export class AuthService {
       user = await this.usersService.create(newUser);
       console.log("newuser: ", user);
     }
-    console.log("user: ", user);
-    const accessToken = await this.tokenService.generateAccessToken(user);
-    const refreshToken = await this.tokenService.generateRefreshToken(user);
-    return { user, tokens: { accessToken, refreshToken } };
+
+    return { user };
   }
 }

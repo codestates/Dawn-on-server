@@ -73,9 +73,8 @@ export class PostsService {
     newPostOBJ.date = new Date();
 
     newPostOBJ.tag = postdatas.tag;
-    newPostOBJ.sticker = postdatas.sticker;
     newPostOBJ.back_color = postdatas.back_color;
-    newPostOBJ.d_day = postdatas.d_day;
+    newPostOBJ.today_learning_time = postdatas.today_learning_time;
     newPostOBJ.comment = postdatas.comment;
     newPostOBJ.thumbs_up = postdatas.thumbs_up;
     newPostOBJ.users = userId.id;

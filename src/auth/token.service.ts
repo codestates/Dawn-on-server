@@ -6,6 +6,8 @@ import { RefreshToken } from "src/entities/RefreshToken.entity";
 import { Users } from "src/entities/Users.entity";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
+import { config } from "dotenv";
+config();
 
 @Injectable()
 export class TokenService {

@@ -14,7 +14,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: "http://localhost:4000/auth/google/redirect",
+      callbackURL: `${process.env.CALLBACK_URI}/auth/google/redirect`,
       scope: ["email", "profile"],
     });
     this.authService = authService;
@@ -28,19 +28,17 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
   ): Promise<any> {
     const { displayName, emails, photos, provider } = profile;
     // console.log(profile);
-    const user = {
+    const users = {
       user_id: emails[0].value,
       user_nickname: displayName,
+      user_job: "전체",
       user_img: photos[0].value,
       accessToken,
       refreshToken,
     };
 
+    const { user } = await this.authService.validateOAuthLogin(users, "google");
+
     done(null, { user });
   }
 }
-
-// const { user, tokens } = await this.authService.validateOAuthLogin(
-//   users,
-//   'google',
-// );

@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-} from 'typeorm';
-import { Users } from './Users.entity';
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { Users } from "./Users.entity";
 @Entity()
 export class Stars {
   @PrimaryGeneratedColumn()
