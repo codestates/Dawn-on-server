@@ -1,50 +1,46 @@
-import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-google-oauth20";
-import { AuthService } from "../auth/auth.service";
+import { Strategy, VerifyCallback } from "passport-google-oauth20";
+import { config } from "dotenv";
+
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { AuthService } from "src/auth/auth.service";
+
+config();
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
+export class GoogleStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: "http://localhost:3000/auth/google/callback",
-      scope: ["profile", "email"],
+      callbackURL: "http://localhost:4000/auth/google/redirect",
+      scope: ["email", "profile"],
     });
+    this.authService = authService;
   }
-
-  //   async validate(
-  //     accessToken: string,
-  //     refreshToken: string,
-  //     profile: any,
-  //   ): Promise<any> {
-  //     const { emails } = profile;
-  //     const user = {
-  //       user_id: emails[0].value,
-  //       accessToken,
-  //       refreshToken,
-  //     };
-  //     done(null, user);
-  //   }
 
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: any
+    profile: any,
+    done: VerifyCallback
   ): Promise<any> {
-    const { emails, photos } = profile;
-    const userProfile = {
+    const { displayName, emails, photos, provider } = profile;
+    // console.log(profile);
+    const user = {
       user_id: emails[0].value,
+      user_nickname: displayName,
+      user_img: photos[0].value,
       accessToken,
       refreshToken,
-      profileUrl: photos[0].value,
-      user_job: "전체",
     };
-    const { user, tokens } = await this.authService.validateOAuthLogin(
-      userProfile,
-      "google"
-    );
-    return { user, tokens };
+
+    done(null, { user });
   }
 }
+
+// const { user, tokens } = await this.authService.validateOAuthLogin(
+//   users,
+//   'google',
+// );

@@ -31,8 +31,8 @@ export class UsersService {
       createUserDto.user_password,
       bcryptConstant.saltOrRounds
     );
-    // 해싱된 패스워드는 리턴 하지 않고, DB에 바로 저장 (노출되면 안되기 때문에)
-    // 패스워드를 제외한 결과값만 리턴
+    createUserDto.provider = "local";
+
     const { user_password, ...result } = await this.usersRepository.save(
       createUserDto
     );

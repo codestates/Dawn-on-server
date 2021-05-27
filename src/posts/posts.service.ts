@@ -1,14 +1,14 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
 // import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Posts } from 'src/entities/Posts.entity';
-import { Stars } from 'src/entities/Star_collections.entity';
-import { Users } from 'src/entities/Users.entity';
-import { StarsService } from 'src/stars/stars.service';
-import { UsersService } from 'src/users/users.service';
-import { Connection, Repository } from 'typeorm';
-import { CreateDataDto } from 'src/dtos/create-data.dto';
-import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from "@nestjs/typeorm";
+import { Posts } from "src/entities/Posts.entity";
+import { Stars } from "src/entities/Star_collections.entity";
+import { Users } from "src/entities/Users.entity";
+import { StarsService } from "src/stars/stars.service";
+import { UsersService } from "src/users/users.service";
+import { Connection, Repository } from "typeorm";
+import { CreateDataDto } from "src/dtos/create-data.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class PostsService {
@@ -24,7 +24,7 @@ export class PostsService {
     private starsService: StarsService,
 
     @InjectRepository(Posts)
-    private postsRepository: Repository<Posts>,
+    private postsRepository: Repository<Posts>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -60,12 +60,12 @@ export class PostsService {
     }
 
     return {
-      message: '직업별 포스트 데이터 가져오기 완료',
+      message: "직업별 포스트 데이터 가져오기 완료",
       postDatas: postDatas,
     };
   }
 
-  async posting(user_id: string, postdatas: CreateDataDto): Promise<any> {
+  async posting(user_id: string, postdatas: any): Promise<any> {
     const userId = await this.usersRepository.findOne({ user_id: user_id });
 
     const newPostOBJ = new Posts();
@@ -74,9 +74,7 @@ export class PostsService {
 
     newPostOBJ.tag = postdatas.tag;
     newPostOBJ.sticker = postdatas.sticker;
-    newPostOBJ.box_color = postdatas.box_color;
     newPostOBJ.back_color = postdatas.back_color;
-    newPostOBJ.learning_time = postdatas.learning_time;
     newPostOBJ.d_day = postdatas.d_day;
     newPostOBJ.comment = postdatas.comment;
     newPostOBJ.thumbs_up = postdatas.thumbs_up;
@@ -84,6 +82,6 @@ export class PostsService {
 
     await this.postsRepository.save(newPostOBJ);
 
-    return { message: '포스팅 완료.', newpost: newPostOBJ };
+    return { message: "포스팅 완료.", newpost: newPostOBJ };
   }
 }

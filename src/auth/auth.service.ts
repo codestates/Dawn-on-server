@@ -24,13 +24,14 @@ export class AuthService {
     this.usersRepository = usersRepository;
     this.jwtService = jwtService;
     this.usersService = usersService;
+    this.tokenService = tokenService;
   }
 
   async validateUser(user_id: string, user_password: string): Promise<any> {
     const user = await this.usersRepository.findOne({
       user_id: user_id,
     });
-    console.log(user);
+    //console.log(user);
     if (!user) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -38,14 +39,14 @@ export class AuthService {
         error: "Forbidden",
       });
     }
-    console.log(user_password);
-    console.log(user.user_password);
+    //  console.log(user_password);
+    //   console.log(user.user_password);
     let isMatch: boolean;
-    if (user.user_password === user_password) {
+    if (await compare(user_password, user.user_password)) {
       console.log("true");
       isMatch = true;
     } else {
-      console.log("false");
+      // console.log("false");
       isMatch = false;
     }
 
@@ -61,50 +62,39 @@ export class AuthService {
     }
   }
 
-  /*   async createRefreshToken(user: Users): Promise<string> {
-    const token: RefreshToken = await this.createRefreshToken(user);
-    const payload = { email: user.email, sub: user.id };
-
-    const opts = {
-      jwtid: String(token.id),
-      secret: process.env.REFRESH_TOKEN_SECRET,
-      expiresIn: "30d",
-    };
-    return this.jwtService.sign(payload, opts);
-  } */
-
-  // user = req.user
-  async signIn(user: any) {
-    const payload = {
-      user_id: user.user_id,
-      //   user_password: user.user_password,
-      user_nickname: user.user_nickname,
-      user_job: user.user_job,
-      user_name: user.user_name,
-      user_img: user.user_img,
-      profile_comment: user.profile_comment,
-      scrap_planer: user.scrap_planer,
-    };
-    /*     const  */
-    // console.log(payload);
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
-  }
+  // async login(user: any) {
+  //   const payload = {
+  //     user_id: user.user_id,
+  //     //   user_password: user.user_password,
+  //     user_nickname: user.user_nickname,
+  //     user_job: user.user_job,
+  //     user_name: user.user_name,
+  //     user_img: user.user_img,
+  //     profile_comment: user.profile_comment,
+  //     scrap_planer: user.scrap_planer,
+  //   };
+  //   // console.log(payload);
+  //   return {
+  //     accessToken: this.jwtService.sign(payload),
+  //   };
+  // }
 
   async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
-    const { user_id, profileUrl } = userProfile;
+    const { user_id, user_img, user_nickname, user_job } = userProfile;
     let user = await this.usersService.findOne(`${user_id}[AUTH]`);
 
     if (!user) {
       const newUser = new Users();
       newUser.user_id = `${user_id}[AUTH]`;
       newUser.user_password = await hash(Math.random().toString(36), 10);
-      newUser.user_nickname = `${user_id}`; // 초기 닉네임은 그냥 아이디로.
-      newUser.user_job = "전체";
-      newUser.user_img = profileUrl;
+      newUser.user_nickname = `${user_nickname}`; // 초기 닉네임은 그냥 아이디로.
+      newUser.user_job = user_job;
+      newUser.user_img = user_img;
+      newUser.provider = provider;
       user = await this.usersService.create(newUser);
+      console.log("newuser: ", user);
     }
+    console.log("user: ", user);
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
     return { user, tokens: { accessToken, refreshToken } };

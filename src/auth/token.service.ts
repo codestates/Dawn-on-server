@@ -52,7 +52,7 @@ export class TokenService {
   }
 
   // 리프레쉬 토큰 암호화
-  async generateRefreshToken(user: Users): Promise<string> {
+  async generateRefreshToken(user: any): Promise<string> {
     const token: RefreshToken = await this.createRefreshToken(user);
     const payload = { user_id: user.user_id, user: user };
 
@@ -156,7 +156,7 @@ export class TokenService {
   }
 
   // 엑세스 토큰 암호화
-  async generateAccessToken(user: Users): Promise<string> {
+  async generateAccessToken(user: any): Promise<string> {
     const payload = { user_id: user.user_id, user: user };
 
     const opts = {

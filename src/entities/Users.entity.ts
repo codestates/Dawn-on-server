@@ -29,10 +29,10 @@ export class Users {
   user_job: string | null;
 
   @Column({ default: null })
-  profile_comment: string | null;
+  profile_comment: string;
 
-  @Column()
-  provider: string;
+  @Column({ default: null })
+  provider: string | null;
   // user.provider = 'local'
   // user.provider = provider
 
