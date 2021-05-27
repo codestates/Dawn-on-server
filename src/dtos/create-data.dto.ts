@@ -14,7 +14,7 @@ export class CreateDataDto {
   back_color: string;
 
   @IsString()
-  learning_time: number;
+  today_learning_time: number;
 
   @IsString()
   d_day: number;

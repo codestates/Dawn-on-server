@@ -1,16 +1,12 @@
-import { CreateDataDto } from "src/dtos/create-data.dto";
-import { CreateUserDto } from "src/dtos/create-user.dto";
+import { Post } from "@nestjs/common";
 import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
 } from "typeorm";
 import { Posts } from "./Posts.entity";
-import { Users } from "./Users.entity";
 @Entity()
 export class Todos {
   @PrimaryGeneratedColumn()
@@ -28,8 +24,9 @@ export class Todos {
   @Column()
   todo_comment: string;
 
-  @Column({ default: null })
-  subject: number | null;
+  @Column()
+  subject: string;
+  //상단에 쓰는 본인 글
 
   @ManyToOne((type) => Posts, (posts) => posts.todos)
   posts!: number;

@@ -9,8 +9,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Users } from "./Users.entity";
 import { Todos } from "./Todos.entity";
+import { Users } from "./Users.entity";
 @Entity()
 export class Posts {
   @PrimaryGeneratedColumn()
@@ -26,16 +26,20 @@ export class Posts {
   sticker: string;
 
   @Column()
-  memo: string;
-
-  @Column()
   back_color: string;
 
   @Column()
   today_learning_time: number;
 
   @Column()
+  d_day: number;
+
+  @Column()
   comment: string;
+
+  @Column()
+  memo: string;
+  //상단에 쓰는 본인 글
 
   @Column({ default: null })
   thumbs_up: number | null;
