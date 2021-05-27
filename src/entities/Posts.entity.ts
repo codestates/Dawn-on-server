@@ -6,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Todos } from "./Todos.entity";
 import { Users } from "./Users.entity";
@@ -19,8 +21,6 @@ export class Posts {
 
   @Column()
   tag: string;
-  // tag ='공부,공스타그램,수능'
-  // tags = tag.split(",");
 
   @Column()
   sticker: string;

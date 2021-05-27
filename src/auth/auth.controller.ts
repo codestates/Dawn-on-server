@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   Res,
@@ -25,7 +26,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.authService = authService;
     this.usersService = usersService;
@@ -46,7 +47,7 @@ export class AuthController {
   @Get("kakao/redirect")
   async kakaoLoginRedirect(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -122,6 +123,13 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch("mypage")
+  async patchProfile(@Req() req): Promise<any> {
+    const updateUser = this.usersService.update(req);
+    return { data: updateUser, message: "유저 정보 업데이트 완료" };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
     //console.log(req.headers);
@@ -141,7 +149,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);

@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   OneToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Posts } from "./Posts.entity";
 import { Stars } from "./Star_collections.entity";
@@ -34,8 +36,8 @@ export class Users {
   @Column({ default: null })
   user_img: string | null;
 
-  @Column()
-  user_job: string;
+  @Column({ default: null })
+  user_job: string | null;
 
   @Column({ default: null })
   profile_comment: string;

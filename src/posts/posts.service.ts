@@ -24,7 +24,7 @@ export class PostsService {
     private starsService: StarsService,
 
     @InjectRepository(Posts)
-    private postsRepository: Repository<Posts>,
+    private postsRepository: Repository<Posts>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
