@@ -4,10 +4,10 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   OneToOne,
-} from 'typeorm';
-import { Posts } from './Posts.entity';
-import { Stars } from './Star_collections.entity';
-import { RefreshToken } from './RefreshToken.entity';
+} from "typeorm";
+import { Posts } from "./Posts.entity";
+import { Stars } from "./Star_collections.entity";
+import { RefreshToken } from "./RefreshToken.entity";
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -25,8 +25,8 @@ export class Users {
   @Column({ default: null })
   user_img: string | null;
 
-  @Column()
-  user_job: string;
+  @Column({ default: null })
+  user_job: string | null;
 
   @Column({ default: null })
   profile_comment: string;

@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 import { TokenService } from './token.service';
 import { KakaoStrategy } from 'src/guards/kakao.strategy';
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -74,7 +74,7 @@ export class AuthController {
   //   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('signin')
+  @Post("signin")
   async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const { user } = req;
     console.log(req.headers);
@@ -82,9 +82,9 @@ export class AuthController {
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       // domain: 'localhost:3000',
-      path: '/',
+      path: "/",
       // secure: true,
       httpOnly: true,
       // sameSite: 'None',
@@ -97,7 +97,7 @@ export class AuthController {
 
     return {
       data: { accessToken },
-      message: '로그인이 성공적으로 되었습니다.',
+      message: "로그인이 성공적으로 되었습니다.",
     };
   }
 
@@ -110,24 +110,24 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('signout')
+  @Post("signout")
   async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
     const { user } = req;
-    res.clearCookie('refreshToken');
+    res.clearCookie("refreshToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
-    return '로그아웃 되었습니다.';
+    return "로그아웃 되었습니다.";
   }
 
-  @Get('google')
+  @Get("google")
   @UseGuards(GoogleAuthGuard)
   async googleLogin(@Req() req) {}
 
-  @Get('google/redirect')
+  @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
-    @Res({ passthrough: true }) res,
+    @Res({ passthrough: true }) res
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);

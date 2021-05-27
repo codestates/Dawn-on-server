@@ -1,14 +1,14 @@
-import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/entities/Users.entity';
-import { Repository } from 'typeorm';
-import { CreateLoginDto } from '../dtos/create-login.dto';
-import { compare, hash } from 'bcrypt';
-import { CreateUserDto } from 'src/dtos/create-user.dto';
-import { UsersService } from 'src/users/users.service';
-import { TokenService } from './token.service';
-import { RefreshToken } from 'src/entities/RefreshToken.entity';
+import { ForbiddenException, HttpStatus, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Users } from "src/entities/Users.entity";
+import { Repository } from "typeorm";
+import { CreateLoginDto } from "../dtos/create-login.dto";
+import { compare, hash } from "bcrypt";
+import { CreateUserDto } from "src/dtos/create-user.dto";
+import { UsersService } from "src/users/users.service";
+import { TokenService } from "./token.service";
+import { RefreshToken } from "src/entities/RefreshToken.entity";
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     private usersService: UsersService,
 
     @InjectRepository(RefreshToken)
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.usersRepository = usersRepository;
     this.jwtService = jwtService;
@@ -36,14 +36,14 @@ export class AuthService {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
         message: [`등록되지 않은 사용자입니다.`],
-        error: 'Forbidden',
+        error: "Forbidden",
       });
     }
     //  console.log(user_password);
     //   console.log(user.user_password);
     let isMatch: boolean;
     if (await compare(user_password, user.user_password)) {
-      console.log('true');
+      console.log("true");
       isMatch = true;
     } else {
       // console.log("false");
@@ -57,7 +57,7 @@ export class AuthService {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
         message: [`사용자 정보가 일치하지 않습니다.`],
-        error: 'Forbidden',
+        error: "Forbidden",
       });
     }
   }
@@ -92,9 +92,9 @@ export class AuthService {
       newUser.user_img = user_img;
       newUser.provider = provider;
       user = await this.usersService.create(newUser);
-      console.log('newuser: ', user);
+      console.log("newuser: ", user);
     }
-    console.log('user: ', user);
+    console.log("user: ", user);
     const accessToken = await this.tokenService.generateAccessToken(user);
     const refreshToken = await this.tokenService.generateRefreshToken(user);
     return { user, tokens: { accessToken, refreshToken } };
