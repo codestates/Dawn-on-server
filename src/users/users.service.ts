@@ -17,7 +17,8 @@ export class UsersService {
     private usersRepository: Repository<Users>
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
-
+  // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
+  // 즉 DB안에 user_id와 req요청이 들어온 user_id가 일치하는것을 찾는 과정
   async create(createUserDto): Promise<any> {
     const isExist = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
@@ -29,6 +30,7 @@ export class UsersService {
         error: `상태코드:${HttpStatus.FORBIDDEN}`,
       });
     }
+    //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
       Number(salt)

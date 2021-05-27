@@ -25,7 +25,6 @@ export class UsersController {
   findAll(): Promise<Users[]> {
     return this.usersService.findAll();
   }
-
   @Get(":id")
   findOne(@Param("id") id: string): Promise<Users> {
     return this.usersService.findOne(id);

@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
 
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.usersRepository = usersRepository;
     this.jwtService = jwtService;
@@ -31,7 +31,7 @@ export class AuthService {
     const user = await this.usersRepository.findOne({
       user_id: user_id,
     });
-    //console.log(user);
+    console.log(user);
     if (!user) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -39,14 +39,14 @@ export class AuthService {
         error: "Forbidden",
       });
     }
-    //  console.log(user_password);
-    //   console.log(user.user_password);
+    console.log(user_password);
+    console.log(user.user_password);
     let isMatch: boolean;
     if (await compare(user_password, user.user_password)) {
       console.log("true");
       isMatch = true;
     } else {
-      // console.log("false");
+      console.log("false");
       isMatch = false;
     }
 

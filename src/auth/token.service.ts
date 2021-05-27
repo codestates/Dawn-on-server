@@ -18,7 +18,7 @@ export class TokenService {
     private usersService: UsersService,
 
     @InjectRepository(RefreshToken)
-    private refreshRepository: Repository<RefreshToken>,
+    private refreshRepository: Repository<RefreshToken>
   ) {
     this.refreshRepository = refreshRepository;
     this.usersRepository = usersRepository;
@@ -68,7 +68,7 @@ export class TokenService {
 
   // 유요한 리프레쉬 토큰인지 확인.
   async resolveRefreshToken(
-    encoded: string,
+    encoded: string
   ): Promise<{ user: Users; token: RefreshToken }> {
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
@@ -134,7 +134,7 @@ export class TokenService {
 
   // 만료된 토큰인지 확인
   async getStoredTokenFromRefreshTokenPayload(
-    payload: any,
+    payload: any
   ): Promise<RefreshToken> {
     const tokenId = payload.user_id;
     if (!tokenId) {
@@ -181,7 +181,7 @@ export class TokenService {
 
   // 만료 엑세스 토큰 리프레쉬 토큰으로 재발급
   async createAccessTokenFromRefreshToken(
-    refresh: string,
+    refresh: string
   ): Promise<{ token: string; user: Users }> {
     const { user } = await this.resolveRefreshToken(refresh);
 
