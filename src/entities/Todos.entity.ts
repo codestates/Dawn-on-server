@@ -13,9 +13,6 @@ export class Todos {
   id: number;
 
   @Column()
-  date: Date;
-
-  @Column()
   learning_time: number;
 
   @Column({ default: "#FFFFFF" })
