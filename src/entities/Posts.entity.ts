@@ -20,9 +20,6 @@ export class Posts {
   date: Date;
 
   @Column()
-  tag: string;
-
-  @Column()
   sticker: string;
 
   @Column()
@@ -31,8 +28,8 @@ export class Posts {
   @Column()
   today_learning_time: number;
 
-  @Column()
-  d_day: number;
+  // @Column()
+  // d_day: number;
 
   @Column()
   comment: string;
@@ -49,4 +46,7 @@ export class Posts {
 
   @OneToMany((type) => Todos, (todos) => todos.posts)
   todos!: number[];
+
+  @OneToMany((type) => Todos, (todos) => todos.posts)
+  tags!: number[];
 }
