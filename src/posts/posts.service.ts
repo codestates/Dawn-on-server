@@ -148,6 +148,10 @@ export class PostsService {
 
     const newPostOBJ = new Posts();
 
+    const newTodoOBJ = new Todos();
+
+    const newTagOBJ = new Tags();
+
     newPostOBJ.date = new Date();
     newPostOBJ.back_color = postdatas.back_color;
     newPostOBJ.d_day = 20; //아직 미정
