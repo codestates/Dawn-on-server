@@ -8,26 +8,12 @@ import {
 } from "typeorm";
 import { Posts } from "./Posts.entity";
 @Entity()
-export class Todos {
+export class Tags {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  learning_time: number;
-
-  @Column({ default: "#FFFFFF" })
-  box_color: string;
-
-  @Column()
-  todo_comment: string;
-
-  @Column()
-  subject: string;
-  //상단에 쓰는 본인 글
-
-  @Column()
-  start_time: string;
-  //상단에 쓰는 본인 글
+  tag: string;
 
   @ManyToOne((type) => Posts, (posts) => posts.todos)
   posts!: number;
