@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Tags } from "./Tags.entity";
 import { Todos } from "./Todos.entity";
 import { Users } from "./Users.entity";
 @Entity()
@@ -18,9 +19,6 @@ export class Posts {
 
   @Column()
   date: Date;
-
-  @Column()
-  tag: string;
 
   @Column()
   sticker: string;
@@ -49,4 +47,7 @@ export class Posts {
 
   @OneToMany((type) => Todos, (todos) => todos.posts)
   todos!: number[];
+
+  @OneToMany((type) => Tags, (tags) => tags.posts)
+  tags!: number[];
 }
