@@ -25,6 +25,10 @@ export class Todos {
   subject: string;
   //상단에 쓰는 본인 글
 
+  @Column()
+  start_time: string;
+  //상단에 쓰는 본인 글
+
   @ManyToOne((type) => Posts, (posts) => posts.todos)
   posts!: number;
 }

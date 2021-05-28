@@ -12,9 +12,9 @@ export class Tags {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: null })
-  tag: string | null;
+  @Column()
+  tag: string;
 
-  @ManyToOne((type) => Posts, (posts) => posts.tags)
+  @ManyToOne((type) => Posts, (posts) => posts.todos)
   posts!: number;
 }
