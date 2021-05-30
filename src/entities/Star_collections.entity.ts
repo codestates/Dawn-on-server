@@ -16,6 +16,6 @@ export class Stars {
   @Column()
   path: string;
 
-  @ManyToOne((type) => Users, (users) => users.stars)
+  @ManyToOne((type) => Users, (users) => users.stars, { onDelete: "CASCADE" })
   users!: Users;
 }
