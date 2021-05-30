@@ -18,6 +18,7 @@ import { TokenService } from "./auth/token.service";
 import { GoogleStrategy } from "./guards/google.strategy";
 import { Todos } from "./entities/Todos.entity";
 import { Tags } from "./entities/Tags.entity";
+import { Likes } from "./entities/Likes.entity";
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { Tags } from "./entities/Tags.entity";
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Users, Posts, Stars, RefreshToken, Todos, Tags], // 사용할 entity의 클래스명을 넣어둔다.
+      entities: [Users, Posts, Stars, RefreshToken, Todos, Tags, Likes], // 사용할 entity의 클래스명을 넣어둔다.
       synchronize: true,
       autoLoadEntities: true, // false가 안전.
       charset: "utf8mb4",
