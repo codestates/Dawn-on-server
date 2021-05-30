@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { jwtConstants } from "src/contants";
+import { Likes } from "src/entities/Likes.entity";
 import { Posts } from "src/entities/Posts.entity";
 import { Stars } from "src/entities/Star_collections.entity";
 import { Tags } from "src/entities/Tags.entity";
@@ -22,7 +23,7 @@ import { PostsService } from "./posts.service";
     //   secret: jwtConstants.secret,
     //   signOptions: { expiresIn: '500s' },
     // }),
-    TypeOrmModule.forFeature([Users, Posts, Stars, Todos, Tags]),
+    TypeOrmModule.forFeature([Users, Posts, Stars, Todos, Tags, Likes]),
   ],
   controllers: [PostsController],
   providers: [PostsService, StarsService, UsersService],

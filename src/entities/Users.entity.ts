@@ -10,6 +10,7 @@ import {
 import { Posts } from "./Posts.entity";
 import { Stars } from "./Star_collections.entity";
 import { RefreshToken } from "./RefreshToken.entity";
+import { Likes } from "./Likes.entity";
 @Entity()
 export class Users {
   @PrimaryGeneratedColumn()
@@ -58,4 +59,7 @@ export class Users {
 
   @OneToMany((type) => Stars, (stars) => stars.users)
   stars!: number[];
+
+  @OneToMany((type) => Likes, (likes) => likes.users)
+  likes!: number[];
 }

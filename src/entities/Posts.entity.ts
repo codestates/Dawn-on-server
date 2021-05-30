@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { Likes } from "./Likes.entity";
 import { Tags } from "./Tags.entity";
 import { Todos } from "./Todos.entity";
 import { Users } from "./Users.entity";
@@ -50,4 +51,7 @@ export class Posts {
 
   @OneToMany((type) => Tags, (tags) => tags.posts)
   tags!: number[];
+
+  @OneToMany((type) => Likes, (likes) => likes.posts)
+  likes!: number[];
 }

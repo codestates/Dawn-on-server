@@ -68,7 +68,31 @@ export class PostsController {
   async mainfeed(@Res({ passthrough: true }) res) {
     const postDatas = await this.postsService.searchAll();
 
+    const ranking = await this.postsService.searchRank(postDatas);
+
     // console.log(postDatas[0].posts.id);
-    return { postDatas };
+    return { postDatas, ranking: ranking };
   }
+
+  @Post("change-thumbsup")
+  async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
+    const postDatas = await this.postsService.changeThumbsUp(
+      body.users_id,
+      body.posts_id,
+    );
+
+    console.log(postDatas);
+    res.status(200).send({ thumbs_up: postDatas });
+  }
+
+  // @Post('ranking')
+  // async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
+  //   const postDatas = await this.postsService.changeThumbsUp(
+  //     body.users_id,
+  //     body.posts_id,
+  //   );
+
+  //   console.log(postDatas);
+  //   res.status(200).send({ thumbs_up: postDatas });
+  // }
 }
