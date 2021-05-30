@@ -18,6 +18,7 @@ import { Tags } from "src/entities/Tags.entity";
 import { Todos } from "src/entities/Todos.entity";
 import { RespostDataDto } from "src/dtos/respost-data.dto";
 import { PostsModule } from "./posts.module";
+import { Likes } from "src/entities/Likes.entity";
 
 @Injectable()
 export class PostsService {
@@ -40,6 +41,9 @@ export class PostsService {
 
     @InjectRepository(Posts)
     private postsRepository: Repository<Posts>,
+
+    @InjectRepository(Likes)
+    private likesRepository: Repository<Likes>,
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -48,6 +52,7 @@ export class PostsService {
     this.postsRepository = postsRepository;
     this.todosRepository = todosRepository;
     this.tagsRepository = tagsRepository;
+    this.likesRepository = likesRepository;
 
     this.connection = connection;
   }
@@ -211,6 +216,72 @@ export class PostsService {
         newTodo: newTodos,
       },
     };
+  }
+
+  async searchRank(postAll): Promise<any> {
+    let resultData = [];
+
+    postAll.sort((a, b) => (a.thumbs_up > b.thumbs_up ? -1 : 1));
+
+    // console.log(postAll);
+
+    for (let i = 0; i < 10; i++) {
+      if (postAll[i] !== undefined) {
+        resultData.push(postAll[i]);
+      }
+    }
+
+    return resultData;
+  }
+
+  async totalLearningTime(user_id: string): Promise<number> {
+    let userId = await (
+      await this.usersRepository.findOne({ user_id: user_id })
+    ).id;
+
+    let postdata = await this.postsRepository.find({ users: userId });
+
+    let total_learing_time = 0;
+
+    for (let i = 0; i < postdata.length; i++) {
+      total_learing_time = total_learing_time + postdata[i].today_learning_time;
+    }
+
+    return total_learing_time;
+  }
+
+  async totalThumbUp(user_id: string): Promise<number> {
+    let userId = await (
+      await this.usersRepository.findOne({ user_id: user_id })
+    ).id;
+
+    let postdata = await this.postsRepository.find({ users: userId });
+
+    let total_thumbs_up = 0;
+
+    for (let i = 0; i < postdata.length; i++) {
+      total_thumbs_up = total_thumbs_up + postdata[i].thumbs_up;
+    }
+
+    return total_thumbs_up;
+  }
+
+  async changeThumbsUp(user_id: number, post_id: number): Promise<string> {
+    const ids = {
+      users: user_id,
+      posts: post_id,
+    };
+
+    const compare = await this.likesRepository.findOne(ids);
+    console.log(compare);
+
+    if (compare === undefined) {
+      await this.likesRepository.save(ids);
+      return "true";
+    } else {
+      await this.likesRepository.delete(ids);
+      return "false";
+    }
   }
 }
 
