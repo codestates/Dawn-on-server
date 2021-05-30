@@ -20,10 +20,13 @@ export class UsersService {
   // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
   // 즉 DB안에 user_id와 req요청이 들어온 user_id가 일치하는것을 찾는 과정
   async create(createUserDto): Promise<any> {
-    const isExist = await this.usersRepository.findOne({
+    const isExistId = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
     });
-    if (isExist) {
+    const isExistNick = await this.usersRepository.findOne({
+      user_nickname: createUserDto.user_nickname,
+    });
+    if (isExistId || isExistNick) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
         message: `이미 등록된 사용자입니다.`,
@@ -60,13 +63,22 @@ export class UsersService {
     const newUsers = await this.usersRepository.findOne({
       user_id: user_id,
     });
-    newUsers.user_nickname = user_nickname;
-    newUsers.user_img = user_img;
-    newUsers.user_job = user_job;
-    newUsers.user_password = await hash(user_password, Number(salt));
-    const userData = await this.usersRepository.save(newUsers);
 
-    return userData;
+    const findNickName = await this.usersRepository.findOne({
+      user_nickname: user_nickname,
+    });
+    console.log(findNickName);
+    if (findNickName === undefined) {
+      newUsers.user_nickname = user_nickname;
+      newUsers.user_img = user_img;
+      newUsers.user_job = user_job;
+      newUsers.user_password = await hash(user_password, Number(salt));
+      const userData = await this.usersRepository.save(newUsers);
+
+      return userData;
+    } else {
+      return false;
+    }
   }
 
   async remove(id: string): Promise<void> {
