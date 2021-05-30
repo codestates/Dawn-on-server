@@ -15,15 +15,20 @@ import { KakaoAuthGuard } from "src/guards/kakao-auth.guard";
 import { UsersService } from "src/users/users.service";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
+import { InjectRepository } from "@nestjs/typeorm";
 import { KakaoStrategy } from "src/guards/kakao.strategy";
 import { CreateUserDto } from "src/dtos/create-user.dto";
 import { config } from "dotenv";
+import { Users } from "src/entities/Users.entity";
+import { Repository } from "typeorm";
 
 config();
 
 @Controller("auth")
 export class AuthController {
   constructor(
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
     private authService: AuthService,
     private usersService: UsersService,
     private tokenService: TokenService
@@ -31,12 +36,16 @@ export class AuthController {
     this.authService = authService;
     this.usersService = usersService;
     this.tokenService = tokenService;
+    this.usersRepository = usersRepository;
   }
 
   @Post("signup")
-  async create(@Body() createUserDto: any): Promise<any> {
-    await this.usersService.create(createUserDto.userdto);
-    return;
+  async create(
+    @Body() createUserDto: any,
+    @Res({ passthrough: true }) res
+  ): Promise<any> {
+    const createUser = await this.usersService.create(createUserDto.userdto);
+    res.status(200).send({ createUser, message: "회원가입 성공" });
   }
 
   @UseGuards(KakaoAuthGuard)
@@ -107,11 +116,11 @@ export class AuthController {
       httpOnly: true,
     });
 
-    return {
+    res.status(200).send({
       user_id: user.user_id,
       data: { accessToken },
       message: "로그인이 성공적으로 되었습니다.",
-    };
+    });
   }
 
   @UseGuards(JwtAuthGuard)
@@ -124,9 +133,16 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Patch("mypage")
-  async patchProfile(@Req() req): Promise<any> {
-    const updateUser = this.usersService.update(req);
-    return { data: updateUser, message: "유저 정보 업데이트 완료" };
+  async patchProfile(
+    @Req() req,
+    @Res({ passthrough: true }) res
+  ): Promise<any> {
+    const updateUser = await this.usersService.update(req);
+    if (updateUser === false) {
+      res.status(400).send("중복된 닉네임 입니다.");
+    } else {
+      res.status(200).send({ updateUser, message: "유저 정보 업데이트 완료" });
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -182,10 +198,18 @@ export class AuthController {
 
   @Get("signin/check")
   async checkUser(@Req() req, @Res() res) {
+    const verify = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
+    );
+    const findUserPK = await this.usersRepository.findOne({
+      user_id: verify.user_id,
+    });
+
     res.status(200).send({
       accessToken: req.cookies.accessToken,
       refreshToken: req.cookies.refreshToken,
+      user_PK: findUserPK.id,
     });
   }
-  // @Get('auth/')
+  // @Get('auth/'
 }
