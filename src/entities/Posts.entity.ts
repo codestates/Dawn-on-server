@@ -43,15 +43,15 @@ export class Posts {
   @Column({ default: null })
   thumbs_up: number | null;
 
-  @ManyToOne((type) => Users, (users) => users.posts)
+  @ManyToOne((type) => Users, (users) => users.posts, { onDelete: "CASCADE" })
   users!: number;
 
-  @OneToMany((type) => Todos, (todos) => todos.posts)
+  @OneToMany((type) => Todos, (todos) => todos.posts, { cascade: true })
   todos!: number[];
 
-  @OneToMany((type) => Tags, (tags) => tags.posts)
+  @OneToMany((type) => Tags, (tags) => tags.posts, { cascade: true })
   tags!: number[];
 
-  @OneToMany((type) => Likes, (likes) => likes.posts)
+  @OneToMany((type) => Likes, (likes) => likes.posts, { cascade: true })
   likes!: number[];
 }

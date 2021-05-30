@@ -15,6 +15,6 @@ export class Tags {
   @Column()
   tag: string;
 
-  @ManyToOne((type) => Posts, (posts) => posts.todos)
+  @ManyToOne((type) => Posts, (posts) => posts.todos, { onDelete: "CASCADE" })
   posts!: number;
 }

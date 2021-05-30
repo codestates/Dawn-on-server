@@ -29,6 +29,6 @@ export class Todos {
   start_time: string;
   //상단에 쓰는 본인 글
 
-  @ManyToOne((type) => Posts, (posts) => posts.todos)
+  @ManyToOne((type) => Posts, (posts) => posts.todos, { onDelete: "CASCADE" })
   posts!: number;
 }

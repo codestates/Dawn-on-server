@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>,
+    private likesRepository: Repository<Likes>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -71,14 +71,16 @@ export class PostsService {
     return resultData;
   }
 
-  async searchUser(user_id: string): Promise<Posts[]> {
-    const userdata = await this.usersRepository.findOne({ user_id: user_id });
+  async searchUser(user_nickname: string): Promise<Posts[]> {
+    const userdata = await this.usersRepository.findOne({
+      user_nickname: user_nickname,
+    });
 
     const userId = userdata.id;
     let resultData = [];
 
     const postdata = await this.postsRepository.find({
-      relations: ["todos", "tags"],
+      relations: ["users", "todos", "tags"],
       where: { users: userId },
     });
 
@@ -148,8 +150,10 @@ export class PostsService {
     return resultData;
   }
 
-  async posting(user_id: string, postdatas: any): Promise<any> {
-    const userId = await this.usersRepository.findOne({ user_id: user_id });
+  async posting(user_nickname: string, postdatas: any): Promise<any> {
+    const userId = await this.usersRepository.findOne({
+      user_nickname: user_nickname,
+    });
 
     const newPostOBJ = new Posts();
 
@@ -234,9 +238,9 @@ export class PostsService {
     return resultData;
   }
 
-  async totalLearningTime(user_id: string): Promise<number> {
+  async totalLearningTime(user_nickname: string): Promise<number> {
     let userId = await (
-      await this.usersRepository.findOne({ user_id: user_id })
+      await this.usersRepository.findOne({ user_nickname: user_nickname })
     ).id;
 
     let postdata = await this.postsRepository.find({ users: userId });
@@ -250,9 +254,9 @@ export class PostsService {
     return total_learing_time;
   }
 
-  async totalThumbUp(user_id: string): Promise<number> {
+  async totalThumbUp(user_nickname: string): Promise<number> {
     let userId = await (
-      await this.usersRepository.findOne({ user_id: user_id })
+      await this.usersRepository.findOne({ user_nickname: user_nickname })
     ).id;
 
     let postdata = await this.postsRepository.find({ users: userId });
@@ -266,22 +270,95 @@ export class PostsService {
     return total_thumbs_up;
   }
 
-  async changeThumbsUp(user_id: number, post_id: number): Promise<string> {
+  async changeThumbsUp(user_PK: number, post_PK: number): Promise<string> {
     const ids = {
-      users: user_id,
-      posts: post_id,
+      users: user_PK,
+      posts: post_PK,
     };
 
     const compare = await this.likesRepository.findOne(ids);
-    console.log(compare);
+    //console.log(compare);
 
     if (compare === undefined) {
       await this.likesRepository.save(ids);
-      return "true";
+      const postid = await this.postsRepository.findOne({ id: post_PK });
+      console.log(postid);
+      if (postid !== undefined) {
+        postid.thumbs_up = postid.thumbs_up + 1;
+        await this.postsRepository.save(postid);
+      }
+      return "up";
     } else {
       await this.likesRepository.delete(ids);
-      return "false";
+      const postid = await this.postsRepository.findOne({ id: post_PK });
+      if (postid !== undefined) {
+        postid.thumbs_up = postid.thumbs_up - 1;
+        await this.postsRepository.save(postid);
+      }
+      return "down";
     }
+  }
+
+  async searchThumbsUp(user_PK: number, post_PK: number): Promise<boolean> {
+    const ids = {
+      users: user_PK,
+      posts: post_PK,
+    };
+
+    const compare = await this.likesRepository.findOne(ids);
+    //console.log(compare);
+
+    if (compare === undefined) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  async deletePost(post_PK: number): Promise<boolean> {
+    const postId = await this.postsRepository.findOne({ id: post_PK });
+    if (postId) {
+      await this.postsRepository.delete(postId.id);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async pacthPost(post_PK: number, postingData: any): Promise<any> {
+    const postId = await this.postsRepository.findOne({ id: post_PK });
+    console.log(postId);
+    if (postId !== undefined) {
+      postId.comment = postingData.comment;
+      postId.memo = postingData.memo;
+      postId.todos = postingData.todos;
+      postId.sticker = postingData.sticker;
+      postId.tags = postingData.tags;
+      postId.today_learning_time = postingData.today_learning_time;
+      await this.postsRepository.save(postId);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async getPost(user_PK: number): Promise<any> {
+    const userId = await this.usersRepository.findOne({ id: user_PK });
+    if (userId === undefined) {
+      return false;
+    }
+    /*  .catch((err) => {
+        return false;
+      }) */ //console.log(userId);
+    let resultData = [];
+    const postdata = await this.postsRepository.find({
+      relations: ["users", "todos", "tags"],
+      where: { users: userId.id },
+    });
+
+    resultData.push(...postdata);
+    console.log(resultData);
+    return resultData;
   }
 }
 
