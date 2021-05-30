@@ -54,12 +54,12 @@ export class Users {
   @OneToOne(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshToken: RefreshToken;
 
-  @OneToMany((type) => Posts, (posts) => posts.users)
+  @OneToMany((type) => Posts, (posts) => posts.users, { cascade: true })
   posts!: number[];
 
-  @OneToMany((type) => Stars, (stars) => stars.users)
+  @OneToMany((type) => Stars, (stars) => stars.users, { cascade: true })
   stars!: number[];
 
-  @OneToMany((type) => Likes, (likes) => likes.users)
+  @OneToMany((type) => Likes, (likes) => likes.users, { cascade: true })
   likes!: number[];
 }
