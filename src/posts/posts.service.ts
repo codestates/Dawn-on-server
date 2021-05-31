@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>,
+    private likesRepository: Repository<Likes>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -169,6 +169,7 @@ export class PostsService {
     newPostOBJ.comment = postdatas.comment;
     newPostOBJ.thumbs_up = 0;
     newPostOBJ.memo = postdatas.memo;
+
     newPostOBJ.users = userId.id;
 
     const postId = await this.postsRepository.save(newPostOBJ);
@@ -184,9 +185,12 @@ export class PostsService {
       newTodoOBJ.subject = el.subject;
       newTodoOBJ.todo_comment = el.todo_comment;
       newTodoOBJ.start_time = el.start_time;
+      if (el.checked !== undefined) {
+        newTodoOBJ.checked = el.checked;
+      }
       newTodoOBJ.posts = postId.id;
 
-      const todo = await this.todosRepository.save(newTodoOBJ);
+      await this.todosRepository.save(newTodoOBJ);
     }
 
     postId.today_learning_time = total_learing_time;
@@ -210,6 +214,8 @@ export class PostsService {
     });
 
     const newTodos = await this.todosRepository.find({ posts: lastPost.id });
+    userId.total_posting = userId.total_posting + 1;
+    await this.usersRepository.save(userId);
 
     return {
       message: "포스팅 완료.",
@@ -222,16 +228,17 @@ export class PostsService {
     };
   }
 
-  async searchRank(postAll): Promise<any> {
+  async searchRank(): Promise<any> {
+    const totalThumbUp = await this.usersRepository.find();
     let resultData = [];
 
-    postAll.sort((a, b) => (a.thumbs_up > b.thumbs_up ? -1 : 1));
+    totalThumbUp.sort((a, b) => (a.total_thumbsup > b.total_thumbsup ? -1 : 1));
 
-    // console.log(postAll);
+    console.log(totalThumbUp);
 
     for (let i = 0; i < 10; i++) {
-      if (postAll[i] !== undefined) {
-        resultData.push(postAll[i]);
+      if (totalThumbUp[i] !== undefined) {
+        resultData.push(totalThumbUp[i]);
       }
     }
 
@@ -270,6 +277,12 @@ export class PostsService {
     return total_thumbs_up;
   }
 
+  async userThumbsUp(postDatas: any): Promise<any> {
+    const userId = postDatas.users.id;
+    console.log(userId);
+    return userId;
+  }
+
   async changeThumbsUp(user_PK: number, post_PK: number): Promise<string> {
     const ids = {
       users: user_PK,
@@ -281,19 +294,35 @@ export class PostsService {
 
     if (compare === undefined) {
       await this.likesRepository.save(ids);
-      const postid = await this.postsRepository.findOne({ id: post_PK });
-      console.log(postid);
+      const postid = await this.postsRepository.findOne({
+        relations: ["users", "todos", "tags"],
+        where: { id: post_PK },
+      });
+
+      const user_PK2 = await this.userThumbsUp(postid);
+
+      const userid = await this.usersRepository.findOne({ id: user_PK2 });
+
       if (postid !== undefined) {
         postid.thumbs_up = postid.thumbs_up + 1;
         await this.postsRepository.save(postid);
+        userid.total_thumbsup = userid.total_thumbsup + 1;
+        await this.usersRepository.save(userid);
       }
       return "up";
     } else {
       await this.likesRepository.delete(ids);
-      const postid = await this.postsRepository.findOne({ id: post_PK });
+      const postid = await this.postsRepository.findOne({
+        relations: ["users", "todos", "tags"],
+        where: { id: post_PK },
+      });
+      const user_PK2 = await this.userThumbsUp(postid);
+      const userid = await this.usersRepository.findOne({ id: user_PK2 });
       if (postid !== undefined) {
         postid.thumbs_up = postid.thumbs_up - 1;
         await this.postsRepository.save(postid);
+        userid.total_thumbsup = userid.total_thumbsup - 1;
+        await this.usersRepository.save(userid);
       }
       return "down";
     }
@@ -315,10 +344,14 @@ export class PostsService {
     }
   }
 
-  async deletePost(post_PK: number): Promise<boolean> {
+  async deletePost(post_PK: number, user_PK: number): Promise<boolean> {
     const postId = await this.postsRepository.findOne({ id: post_PK });
+    const userId = await this.usersRepository.findOne({ id: user_PK });
+    userId.total_posting = userId.total_posting - 1;
+
     if (postId) {
       await this.postsRepository.delete(postId.id);
+      await this.usersRepository.save(userId);
       return true;
     } else {
       return false;

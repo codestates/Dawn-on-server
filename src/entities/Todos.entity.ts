@@ -25,6 +25,9 @@ export class Todos {
   subject: string;
   //상단에 쓰는 본인 글
 
+  @Column({ default: false })
+  checked: boolean;
+
   @Column()
   start_time: string;
   //상단에 쓰는 본인 글

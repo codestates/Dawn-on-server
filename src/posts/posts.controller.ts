@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { TokenService } from "src/auth/token.service";
 import { CreateDataDto } from "src/dtos/create-data.dto";
 import { Posts } from "src/entities/Posts.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
@@ -21,25 +22,34 @@ export class PostsController {
   constructor(
     private usersService: UsersService,
     private postsService: PostsService,
+    private tokenService: TokenService
   ) {
     this.usersService = usersService;
     this.postsService = postsService;
+    this.tokenService = tokenService;
   }
 
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
   async posting(@Req() req, @Res({ passthrough: true }) res) {
-    // console.log(req);
-    const newPost = await this.postsService.posting(
-      req.body.user_nickname,
-      req.body.postdatas,
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
-
-    if (newPost !== undefined) {
-      res.status(200).send(newPost);
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      const newPost = await this.postsService.posting(
+        decoded.user.user_nickname,
+        req.body.postdatas
+      );
+
+      if (newPost !== undefined) {
+        res.status(200).send({ message: "포스팅 요청 성공" });
+      } else {
+        res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      }
     }
+    // console.log(req);
   }
 
   @Post("search-user")
@@ -94,88 +104,135 @@ export class PostsController {
   }
 
   @Get("mainfeed")
-  async mainfeed(@Res({ passthrough: true }) res) {
-    const postDatas = await this.postsService.searchAll();
-
-    const ranking = await this.postsService.searchRank(postDatas);
-
-    // console.log(postDatas[0].posts.id);
-    if (postDatas !== undefined && ranking !== undefined) {
-      res.status(200).send({
-        postDatas,
-        ranking: ranking,
-        message: "전체 포스트 및 랭킹순 포스트 가져오기 완료",
-      });
+  async mainfeed(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
+    );
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      const postDatas = await this.postsService.searchAll();
+
+      const ranking = await this.postsService.searchRank();
+
+      // console.log(postDatas[0].posts.id);
+      if (postDatas !== undefined && ranking !== undefined) {
+        res.status(200).send({
+          postDatas,
+          ranking: ranking,
+          message: "전체 포스트 및 랭킹순 포스트 가져오기 완료",
+        });
+      } else {
+        res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      }
     }
   }
 
   @Post("change-thumbsup")
-  async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
-    const postDatas = await this.postsService.changeThumbsUp(
-      body.user_PK,
-      body.post_PK,
+  async change_thumbsup(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
+    } else {
+      const postDatas = await this.postsService.changeThumbsUp(
+        decoded.user.id,
+        req.body.post_PK
+      );
 
-    console.log(postDatas);
-    res.status(200).send({ thumbs_up: postDatas });
+      console.log(postDatas);
+      res.status(200).send({ thumbs_up: postDatas });
+    }
   }
 
   @Post("searchThumbsUp")
-  async searchThumbsUp(@Body() body, @Res({ passthrough: true }) res) {
-    const searchDatas = await this.postsService.searchThumbsUp(
-      body.user_PK,
-      body.post_PK,
+  async searchThumbsUp(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
-    if (searchDatas === undefined) {
-      res.status(400).send("유효하지 않은 입력입니다.");
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(200).send(searchDatas);
+      const searchDatas = await this.postsService.searchThumbsUp(
+        decoded.user.id,
+        req.body.post_PK
+      );
+      if (searchDatas === undefined) {
+        res.status(400).send("유효하지 않은 입력입니다.");
+      } else {
+        res.status(200).send(searchDatas);
+      }
     }
   }
 
-  @Post("myfeed")
-  async getPost(@Body() body, @Res({ passthrough: true }) res) {
-    const getPostingData = await this.postsService.getPost(body.user_PK);
-
-    if (getPostingData === false) {
-      res.status(404).send("유효한 유저가 아닙니다.");
-      return;
-    }
-    if (getPostingData.length === 0) {
-      res.status(400).send("포스팅 가져오기 실패: 작성된 포스팅이 없습니다.");
+  @Get("myfeed")
+  async getPost(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
+    );
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(200).send({
-        message: "포스팅 가져오기 성공",
-        userDatas: getPostingData.userdata,
-        postDatas: getPostingData.postdata,
-      });
+      const getPostingData = await this.postsService.getPost(decoded.user.id);
+
+      if (getPostingData === false) {
+        res.status(404).send("유효한 유저가 아닙니다.");
+        return;
+      }
+      if (getPostingData.length === 0) {
+        res.status(400).send("포스팅 가져오기 실패: 작성된 포스팅이 없습니다.");
+      } else {
+        res.status(200).send({
+          message: "포스팅 가져오기 성공",
+          userDatas: getPostingData.userdata,
+          postDatas: getPostingData.postdata,
+        });
+      }
     }
   }
 
+  // 컨트롤러 내에서 accessToken 복호화
   @Delete("myfeed")
-  async deletePost(@Body() body, @Res({ passthrough: true }) res) {
-    const deletePostingData = await this.postsService.deletePost(body.post_PK);
-    console.log(deletePostingData);
-    if (deletePostingData === true) {
-      res.status(200).send("포스팅 삭제 성공");
+  async deletePost(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
+    );
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(400).send("포스팅 삭제 실패");
+      // console.log(decoded);
+      const deletePostingData = await this.postsService.deletePost(
+        req.body.post_PK,
+        decoded.user.id
+      );
+      console.log(deletePostingData);
+      if (deletePostingData === true) {
+        res.status(200).send("포스팅 삭제 성공");
+      } else {
+        res.status(400).send("포스팅 삭제 실패");
+      }
     }
   }
 
   @Patch("myfeed")
-  async patchPost(@Body() body, @Res({ passthrough: true }) res) {
-    const patchPostingData = await this.postsService.pacthPost(
-      body.post_PK,
-      body.postdatas,
+  async patchPost(@Req() req, @Res({ passthrough: true }) res) {
+    const decoded = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
-    console.log(patchPostingData);
-    if (patchPostingData === true) {
-      res.status(200).send("포스팅 업데이트 성공");
+    if (decoded === null) {
+      res.status(401).send("접근 권한이 없습니다.");
     } else {
-      res.status(400).send("포스팅 업데이트 실패");
+      const patchPostingData = await this.postsService.pacthPost(
+        decoded.user.id,
+        req.body.postdatas
+      );
+      console.log(patchPostingData);
+      if (patchPostingData === true) {
+        res.status(200).send("포스팅 업데이트 성공");
+      } else {
+        res.status(400).send("포스팅 업데이트 실패");
+      }
     }
   }
 

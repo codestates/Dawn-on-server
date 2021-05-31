@@ -26,13 +26,16 @@ export class Users {
   user_id: string;
 
   @Column({ default: 0 })
-  total_learning_time: number | 0;
+  total_learning_time: number;
 
   @Column({ default: 0 })
-  total_posting: number | 0;
+  total_posting: number;
 
   @Column({ default: 0 })
-  total_star: number | 0;
+  total_star: number;
+
+  @Column({ default: 0 })
+  total_thumbsup: number;
 
   @Column({ default: null })
   user_img: string | null;
@@ -43,8 +46,8 @@ export class Users {
   @Column({ default: null })
   profile_comment: string;
 
-  @Column({ default: null })
-  provider: string | null;
+  @Column({ default: "local" })
+  provider: string;
   // user.provider = 'local'
   // user.provider = provider
 
