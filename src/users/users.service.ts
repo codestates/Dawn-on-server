@@ -14,7 +14,7 @@ const salt = process.env.SALTORROUNDS;
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>
+    private usersRepository: Repository<Users>,
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
   // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
@@ -36,11 +36,11 @@ export class UsersService {
     //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      Number(salt)
+      Number(salt),
     );
 
     const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto
+      createUserDto,
     );
     return result;
   }
@@ -58,27 +58,46 @@ export class UsersService {
   }
 
   async update(req): Promise<any> {
-    const { user_id, user_nickname, user_img, user_job, user_password } =
-      req.body;
+    const {
+      user_PK,
+      user_nickname,
+      user_img,
+      user_job,
+      user_password,
+      user_comment,
+    } = req.body;
     const newUsers = await this.usersRepository.findOne({
-      user_id: user_id,
+      id: user_PK,
     });
 
-    const findNickName = await this.usersRepository.findOne({
-      user_nickname: user_nickname,
-    });
-    console.log(findNickName);
-    if (findNickName === undefined) {
-      newUsers.user_nickname = user_nickname;
-      newUsers.user_img = user_img;
-      newUsers.user_job = user_job;
-      newUsers.user_password = await hash(user_password, Number(salt));
-      const userData = await this.usersRepository.save(newUsers);
+    if (user_nickname !== "") {
+      const findNickName = await this.usersRepository.findOne({
+        user_nickname: user_nickname,
+      });
 
-      return userData;
-    } else {
+      if (findNickName === undefined) {
+        newUsers.user_nickname = user_nickname;
+      }
       return false;
     }
+
+    if (user_img !== "") {
+      newUsers.user_img = user_img;
+    }
+    if (user_job !== "") {
+      newUsers.user_job = user_job;
+    }
+
+    if (user_comment !== "") {
+      newUsers.profile_comment = user_comment;
+    }
+    if (user_password !== "") {
+      newUsers.user_password = await hash(user_password, Number(salt));
+    }
+
+    const userData = await this.usersRepository.save(newUsers);
+
+    return userData;
   }
 
   async remove(id: string): Promise<void> {

@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UseGuards,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
@@ -22,11 +23,26 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll(): Promise<Users[]> {
-    return this.usersService.findAll();
+  async findAll(@Body() body, @Res({ passthrough: true }) res): Promise<any> {
+    const userDatas = await this.usersService.findAll();
+
+    if (userDatas !== undefined) {
+      res.status(200).send(userDatas);
+    } else {
+      res.status(400);
+    }
   }
   @Get(":id")
-  findOne(@Param("id") id: string): Promise<Users> {
-    return this.usersService.findOne(id);
+  async findOne(
+    @Param("id") id: string,
+    @Res({ passthrough: true }) res,
+  ): Promise<any> {
+    const userDatas = await this.usersService.findOne(id);
+
+    if (userDatas !== undefined) {
+      res.status(200).send(userDatas);
+    } else {
+      res.status(400);
+    }
   }
 }
