@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>
+    private likesRepository: Repository<Likes>,
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -128,7 +128,7 @@ export class PostsService {
     tagdata.map((el) => {
       tagNumbers.push(el.posts.id);
     });
-    console.log(tagNumbers);
+    // console.log(tagNumbers);
 
     return tagNumbers;
   }
@@ -145,7 +145,7 @@ export class PostsService {
       resultData.push(...postdata);
     }
 
-    console.log(resultData);
+    // console.log(resultData);
 
     return resultData;
   }
@@ -357,8 +357,8 @@ export class PostsService {
     });
 
     resultData.push(...postdata);
-    console.log(resultData);
-    return resultData;
+    // console.log(resultData);
+    return { userdata: userId, postdata: resultData };
   }
 }
 

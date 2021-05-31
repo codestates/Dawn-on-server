@@ -20,7 +20,7 @@ import { PostsService } from "./posts.service";
 export class PostsController {
   constructor(
     private usersService: UsersService,
-    private postsService: PostsService
+    private postsService: PostsService,
   ) {
     this.usersService = usersService;
     this.postsService = postsService;
@@ -28,30 +28,48 @@ export class PostsController {
 
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
-  async posting(@Req() req) {
+  async posting(@Req() req, @Res({ passthrough: true }) res) {
     // console.log(req);
     const newPost = await this.postsService.posting(
       req.body.user_nickname,
-      req.body.postdatas
+      req.body.postdatas,
     );
 
-    return newPost;
+    if (newPost !== undefined) {
+      res.status(200).send(newPost);
+    } else {
+      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+    }
   }
 
   @Post("search-user")
   async searchuser(@Body() body, @Res({ passthrough: true }) res) {
-    const postings = await this.postsService.searchUser(body.user_nickname);
-    return { user_nickname: body.user_nickname, postings: postings };
+    const postDatas = await this.postsService.searchUser(body.user_nickname);
+
+    if (postDatas !== undefined) {
+      res.status(200).send({
+        user_nickname: body.user_nickname,
+        postings: postDatas,
+        message: "닉네임별 포스트 데이터 가져오기 완료",
+      });
+    } else {
+      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+    }
   }
 
   @Post("search-job")
   async searchJob(@Body() body, @Res({ passthrough: true }) res) {
     const postDatas = await this.postsService.searchJob(body.user_job);
-    return {
-      user_job: body.user_job,
-      postDatas,
-      message: "직업별 포스트 데이터 가져오기 완료",
-    };
+
+    if (postDatas !== undefined) {
+      res.status(200).send({
+        user_job: body.user_job,
+        postDatas,
+        message: "직업별 포스트 데이터 가져오기 완료",
+      });
+    } else {
+      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+    }
   }
 
   @Post("search-tag")
@@ -63,7 +81,16 @@ export class PostsController {
     const postDatas = await this.postsService.searchTag(tagNumbers);
 
     // console.log(postDatas[0].posts.id);
-    return { user_tag: body.tag, postDatas };
+
+    if (postDatas !== undefined) {
+      res.status(200).send({
+        user_tag: body.tag,
+        postDatas,
+        message: "태그별 포스트 데이터 가져오기 완료.",
+      });
+    } else {
+      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+    }
   }
 
   @Get("mainfeed")
@@ -73,14 +100,22 @@ export class PostsController {
     const ranking = await this.postsService.searchRank(postDatas);
 
     // console.log(postDatas[0].posts.id);
-    return { postDatas, ranking: ranking };
+    if (postDatas !== undefined && ranking !== undefined) {
+      res.status(200).send({
+        postDatas,
+        ranking: ranking,
+        message: "전체 포스트 및 랭킹순 포스트 가져오기 완료",
+      });
+    } else {
+      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+    }
   }
 
   @Post("change-thumbsup")
   async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
     const postDatas = await this.postsService.changeThumbsUp(
       body.user_PK,
-      body.post_PK
+      body.post_PK,
     );
 
     console.log(postDatas);
@@ -91,7 +126,7 @@ export class PostsController {
   async searchThumbsUp(@Body() body, @Res({ passthrough: true }) res) {
     const searchDatas = await this.postsService.searchThumbsUp(
       body.user_PK,
-      body.post_PK
+      body.post_PK,
     );
     if (searchDatas === undefined) {
       res.status(400).send("유효하지 않은 입력입니다.");
@@ -111,11 +146,11 @@ export class PostsController {
     if (getPostingData.length === 0) {
       res.status(400).send("포스팅 가져오기 실패: 작성된 포스팅이 없습니다.");
     } else {
-      if (getPostingData !== undefined) {
-        res
-          .status(200)
-          .send({ message: "포스팅 가져오기 성공", postDatas: getPostingData });
-      }
+      res.status(200).send({
+        message: "포스팅 가져오기 성공",
+        userDatas: getPostingData.userdata,
+        postDatas: getPostingData.postdata,
+      });
     }
   }
 
@@ -134,7 +169,7 @@ export class PostsController {
   async patchPost(@Body() body, @Res({ passthrough: true }) res) {
     const patchPostingData = await this.postsService.pacthPost(
       body.post_PK,
-      body.postdatas
+      body.postdatas,
     );
     console.log(patchPostingData);
     if (patchPostingData === true) {
