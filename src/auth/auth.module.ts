@@ -24,8 +24,7 @@ import { KakaoStrategy } from "src/guards/kakao.strategy";
       secret: jwtConstants.secret,
       signOptions: { expiresIn: "500s" },
     }),
-    TypeOrmModule.forFeature([Users]),
-    TypeOrmModule.forFeature([RefreshToken]),
+    TypeOrmModule.forFeature([Users, RefreshToken]),
   ],
   providers: [
     AuthService,
