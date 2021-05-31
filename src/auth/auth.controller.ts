@@ -31,7 +31,7 @@ export class AuthController {
     private usersRepository: Repository<Users>,
     private authService: AuthService,
     private usersService: UsersService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
   ) {
     this.authService = authService;
     this.usersService = usersService;
@@ -42,7 +42,7 @@ export class AuthController {
   @Post("signup")
   async create(
     @Body() createUserDto: any,
-    @Res({ passthrough: true }) res
+    @Res({ passthrough: true }) res,
   ): Promise<any> {
     const createUser = await this.usersService.create(createUserDto.userdto);
     res.status(200).send({ createUser, message: "회원가입 성공" });
@@ -56,7 +56,7 @@ export class AuthController {
   @Get("kakao/redirect")
   async kakaoLoginRedirect(
     @Req() req,
-    @Res({ passthrough: true }) res
+    @Res({ passthrough: true }) res,
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -74,8 +74,11 @@ export class AuthController {
     });
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+      // domain: 'localhost:3000',
       path: "/",
+      // secure: true,
       httpOnly: true,
+      // sameSite: 'None',
     });
 
     // // 메인화면 구성에 따라서 수정.
@@ -112,30 +115,32 @@ export class AuthController {
     });
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+      // domain: 'localhost:3000',
       path: "/",
+      // secure: true,
       httpOnly: true,
+      // sameSite: 'None',
     });
 
     res.status(200).send({
       user_id: user.user_id,
-      data: { accessToken },
       message: "로그인이 성공적으로 되었습니다.",
     });
   }
 
   @UseGuards(JwtAuthGuard)
   @Get("mypage")
-  async getProfile(@Req() req): Promise<any> {
+  async getProfile(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
     const user = req.user;
 
-    return user;
+    return res.status(200).send({ user, message: "개인정보 가져오기 완료" });
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Patch("mypage")
   async patchProfile(
     @Req() req,
-    @Res({ passthrough: true }) res
+    @Res({ passthrough: true }) res,
   ): Promise<any> {
     const updateUser = await this.usersService.update(req);
     if (updateUser === false) {
@@ -154,6 +159,8 @@ export class AuthController {
     res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
+    res.status(200).send("로그아웃 성공");
+
     return "로그아웃 되었습니다.";
   }
 
@@ -165,7 +172,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(
     @Req() req,
-    @Res({ passthrough: true }) res
+    @Res({ passthrough: true }) res,
   ): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
@@ -183,8 +190,11 @@ export class AuthController {
     });
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+      // domain: 'localhost:3000',
       path: "/",
+      // secure: true,
       httpOnly: true,
+      // sameSite: 'None',
     });
 
     // // 메인화면 구성에 따라서 수정.
@@ -199,10 +209,10 @@ export class AuthController {
   @Get("signin/check")
   async checkUser(@Req() req, @Res() res) {
     const verify = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     const findUserPK = await this.usersRepository.findOne({
-      user_id: verify.user_id,
+      user_id: verify.user.user_id,
     });
 
     res.status(200).send({
@@ -211,5 +221,4 @@ export class AuthController {
       user_PK: findUserPK.id,
     });
   }
-  // @Get('auth/'
 }
