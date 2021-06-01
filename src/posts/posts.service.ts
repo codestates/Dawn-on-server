@@ -154,7 +154,7 @@ export class PostsService {
     const userId = await this.usersRepository.findOne({
       user_nickname: user_nickname,
     });
-
+    //console.log(user_nickname);
     const newPostOBJ = new Posts();
 
     const newTodoOBJ = new Todos();
@@ -357,19 +357,37 @@ export class PostsService {
       return false;
     }
   }
-
-  async pacthPost(post_PK: number, postingData: any): Promise<any> {
-    const postId = await this.postsRepository.findOne({ id: post_PK });
-    //console.log(postId);
-    if (postId !== undefined) {
-      postId.comment = postingData.comment;
-      postId.memo = postingData.memo;
-      postId.todos = postingData.todos;
-      postId.sticker = postingData.sticker;
-      postId.tags = postingData.tags;
-      postId.today_learning_time = postingData.today_learning_time;
-      await this.postsRepository.save(postId);
+  async checkPK(decode_user_id: number, postData: any): Promise<boolean> {
+    const postId = postData.users.id;
+    console.log(decode_user_id);
+    console.log(postData.users.id);
+    if (decode_user_id !== postId) {
+      return false;
+    } else {
       return true;
+    }
+  }
+
+  async pacthPost(decode_user_id: number, postingData: any): Promise<any> {
+    const postId = await this.postsRepository.findOne({
+      relations: ["users", "todos", "tags"],
+      where: { id: postingData.post_PK },
+    });
+    const check = await this.checkPK(decode_user_id, postId);
+    console.log(check);
+    if (check) {
+      if (postId !== undefined) {
+        postId.comment = postingData.comment;
+        postId.memo = postingData.memo;
+        postId.todos = postingData.todos;
+        postId.sticker = postingData.sticker;
+        postId.tags = postingData.tags;
+        postId.today_learning_time = postingData.today_learning_time;
+        await this.postsRepository.save(postId);
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
