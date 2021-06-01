@@ -18,7 +18,7 @@ export class TokenService {
     private usersService: UsersService,
 
     @InjectRepository(RefreshToken)
-    private refreshRepository: Repository<RefreshToken>
+    private refreshRepository: Repository<RefreshToken>,
   ) {
     this.refreshRepository = refreshRepository;
     this.usersRepository = usersRepository;
@@ -68,7 +68,7 @@ export class TokenService {
 
   // 유요한 리프레쉬 토큰인지 확인.
   async resolveRefreshToken(
-    encoded: string
+    encoded: string,
   ): Promise<{ user: Users; token: RefreshToken }> {
     const payload = await this.decodeRefreshToken(encoded);
     const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
@@ -101,19 +101,20 @@ export class TokenService {
         secret: process.env.REFRESH_TOKEN_SECRET,
       });
     } catch (e) {
-      if (e instanceof TokenExpiredError) {
-        throw new ForbiddenException({
-          statusCode: HttpStatus.FORBIDDEN,
-          message: ["Refresh token expired"],
-          error: "Forbidden",
-        });
-      } else {
-        throw new ForbiddenException({
-          statusCode: HttpStatus.FORBIDDEN,
-          message: ["유효하지 않은 토큰입니다."],
-          error: "Forbidden",
-        });
-      }
+      return null;
+      // if (e instanceof TokenExpiredError) {
+      //   throw new ForbiddenException({
+      //     statusCode: HttpStatus.FORBIDDEN,
+      //     message: ["Refresh token expired"],
+      //     error: "Forbidden",
+      //   });
+      // } else {
+      //   throw new ForbiddenException({
+      //     statusCode: HttpStatus.FORBIDDEN,
+      //     message: ["유효하지 않은 토큰입니다."],
+      //     error: "Forbidden",
+      //   });
+      // }
     }
   }
 
@@ -134,7 +135,7 @@ export class TokenService {
 
   // 만료된 토큰인지 확인
   async getStoredTokenFromRefreshTokenPayload(
-    payload: any
+    payload: any,
   ): Promise<RefreshToken> {
     const tokenId = payload.user_id;
     if (!tokenId) {
@@ -163,7 +164,7 @@ export class TokenService {
 
     const opts = {
       secret: process.env.ACCESS_TOKEN_SECRET,
-      expiresIn: "2h",
+      expiresIn: "10s",
     };
     return this.jwtService.sign(payload, opts);
   }
@@ -181,12 +182,29 @@ export class TokenService {
 
   // 만료 엑세스 토큰 리프레쉬 토큰으로 재발급
   async createAccessTokenFromRefreshToken(
-    refresh: string
+    refresh: string,
   ): Promise<{ token: string; user: Users }> {
     const { user } = await this.resolveRefreshToken(refresh);
 
     const token = await this.generateAccessToken(user);
 
     return { user, token };
+  }
+
+  async regenerationToken(req: any): Promise<any> {
+    let verify: any;
+    let accessToken: any;
+    if (req.user === null) {
+      const refresh = await this.decodeRefreshToken(req.cookies.refreshToken);
+      console.log("refresh", refresh);
+      if (refresh === null) {
+        return false;
+      } else {
+        accessToken = await this.generateAccessToken(refresh.user);
+        console.log("accsses", accessToken);
+        verify = await this.resolveAccessToken(accessToken);
+      }
+    }
+    return { accessToken, verify };
   }
 }
