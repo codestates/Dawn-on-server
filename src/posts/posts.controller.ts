@@ -59,6 +59,7 @@ export class PostsController {
         });
       }
     }
+    //console.log(decoded);
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -392,6 +393,7 @@ export class PostsController {
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
+      console.log(decoded.user);
       const patchPostingData = await this.postsService.pacthPost(
         decoded.user.id,
         req.body.postdatas
