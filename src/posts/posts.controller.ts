@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Next,
   Patch,
   Post,
   Req,
@@ -22,7 +23,7 @@ export class PostsController {
   constructor(
     private usersService: UsersService,
     private postsService: PostsService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
   ) {
     this.usersService = usersService;
     this.postsService = postsService;
@@ -31,16 +32,16 @@ export class PostsController {
 
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
-  async posting(@Req() req, @Res({ passthrough: true }) res) {
+  async posting(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
       const newPost = await this.postsService.posting(
         decoded.user.user_nickname,
-        req.body.postdatas
+        req.body.postdatas,
       );
 
       if (newPost !== undefined) {
@@ -53,7 +54,7 @@ export class PostsController {
   }
 
   @Post("search-user")
-  async searchuser(@Body() body, @Res({ passthrough: true }) res) {
+  async searchuser(@Body() body, @Res() res) {
     const postDatas = await this.postsService.searchUser(body.user_nickname);
 
     if (postDatas !== undefined) {
@@ -68,7 +69,7 @@ export class PostsController {
   }
 
   @Post("search-job")
-  async searchJob(@Body() body, @Res({ passthrough: true }) res) {
+  async searchJob(@Body() body, @Res() res) {
     const postDatas = await this.postsService.searchJob(body.user_job);
 
     if (postDatas !== undefined) {
@@ -83,7 +84,7 @@ export class PostsController {
   }
 
   @Post("search-tag")
-  async searchTag(@Body() body, @Res({ passthrough: true }) res) {
+  async searchTag(@Body() body, @Res() res) {
     const tagDatas = await this.postsService.searchTagPostId(body.tag);
 
     const tagNumbers = await this.postsService.searchTagPostIdNumber(tagDatas);
@@ -104,9 +105,9 @@ export class PostsController {
   }
 
   @Get("mainfeed")
-  async mainfeed(@Req() req, @Res({ passthrough: true }) res) {
+  async mainfeed(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
@@ -129,16 +130,16 @@ export class PostsController {
   }
 
   @Post("change-thumbsup")
-  async change_thumbsup(@Req() req, @Res({ passthrough: true }) res) {
+  async change_thumbsup(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
       const postDatas = await this.postsService.changeThumbsUp(
         decoded.user.id,
-        req.body.post_PK
+        req.body.post_PK,
       );
 
       console.log(postDatas);
@@ -147,16 +148,16 @@ export class PostsController {
   }
 
   @Post("searchThumbsUp")
-  async searchThumbsUp(@Req() req, @Res({ passthrough: true }) res) {
+  async searchThumbsUp(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
       const searchDatas = await this.postsService.searchThumbsUp(
         decoded.user.id,
-        req.body.post_PK
+        req.body.post_PK,
       );
       if (searchDatas === undefined) {
         res.status(400).send("유효하지 않은 입력입니다.");
@@ -167,36 +168,39 @@ export class PostsController {
   }
 
   @Get("myfeed")
-  async getPost(@Req() req, @Res({ passthrough: true }) res) {
+  async getPost(@Req() req, @Res() res): Promise<any> {
+    console.log(req.cookies);
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
-    } else {
-      const getPostingData = await this.postsService.getPost(decoded.user.id);
+      return res.status(401).send("접근 권한이 없습니다.");
+    }
 
-      if (getPostingData === false) {
-        res.status(404).send("유효한 유저가 아닙니다.");
-        return;
-      }
-      if (getPostingData.length === 0) {
-        res.status(400).send("포스팅 가져오기 실패: 작성된 포스팅이 없습니다.");
-      } else {
-        res.status(200).send({
-          message: "포스팅 가져오기 성공",
-          userDatas: getPostingData.userdata,
-          postDatas: getPostingData.postdata,
-        });
-      }
+    const getPostingData = await this.postsService.getPost(decoded.user.id);
+    console.log(getPostingData);
+    if (getPostingData === false) {
+      return res.status(404).send("유효한 유저가 아닙니다.");
+    } else if (getPostingData.postdata.length === 0) {
+      return res.status(200).send({
+        message: "작성된 포스팅이 없습니다.",
+        userDatas: getPostingData.userdata,
+        postDatas: [],
+      });
+    } else {
+      return res.status(200).send({
+        message: "포스팅 가져오기 성공",
+        userDatas: getPostingData.userdata,
+        postDatas: getPostingData.postdata,
+      });
     }
   }
 
   // 컨트롤러 내에서 accessToken 복호화
   @Delete("myfeed")
-  async deletePost(@Req() req, @Res({ passthrough: true }) res) {
+  async deletePost(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
@@ -204,7 +208,7 @@ export class PostsController {
       // console.log(decoded);
       const deletePostingData = await this.postsService.deletePost(
         req.body.post_PK,
-        decoded.user.id
+        decoded.user.id,
       );
       console.log(deletePostingData);
       if (deletePostingData === true) {
@@ -216,16 +220,16 @@ export class PostsController {
   }
 
   @Patch("myfeed")
-  async patchPost(@Req() req, @Res({ passthrough: true }) res) {
+  async patchPost(@Req() req, @Res() res) {
     const decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken
+      req.cookies.accessToken,
     );
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
       const patchPostingData = await this.postsService.pacthPost(
         decoded.user.id,
-        req.body.postdatas
+        req.body.postdatas,
       );
       console.log(patchPostingData);
       if (patchPostingData === true) {
@@ -237,7 +241,7 @@ export class PostsController {
   }
 
   // @Post('ranking')
-  // async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
+  // async change_thumbsup(@Body() body, @Res() res) {
   //   const postDatas = await this.postsService.changeThumbsUp(
   //     body.user_PK,
   //     body.post_PK,

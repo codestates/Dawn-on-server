@@ -26,7 +26,7 @@ export class Todos {
   //상단에 쓰는 본인 글
 
   @Column({ default: false })
-  checked: boolean;
+  checked: boolean | null;
 
   @Column()
   start_time: string;

@@ -23,6 +23,7 @@ export class UsersService {
     const isExistId = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
     });
+
     const isExistNick = await this.usersRepository.findOne({
       user_nickname: createUserDto.user_nickname,
     });
@@ -57,18 +58,14 @@ export class UsersService {
     return this.usersRepository.findOne({ id: id });
   }
 
-  async update(req): Promise<any> {
-    const {
-      user_PK,
-      user_nickname,
-      user_img,
-      user_job,
-      user_password,
-      user_comment,
-    } = req.body;
+  async update(user_PK: number, req: any): Promise<any> {
+    console.log(req.body);
+    const { user_nickname, user_img, user_job, user_password, user_comment } =
+      req.body;
     const newUsers = await this.usersRepository.findOne({
       id: user_PK,
     });
+    console.log(newUsers);
 
     if (user_nickname !== "") {
       const findNickName = await this.usersRepository.findOne({

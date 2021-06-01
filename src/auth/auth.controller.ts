@@ -40,10 +40,7 @@ export class AuthController {
   }
 
   @Post("signup")
-  async create(
-    @Body() createUserDto: any,
-    @Res({ passthrough: true }) res,
-  ): Promise<any> {
+  async create(@Body() createUserDto: any, @Res() res): Promise<any> {
     const createUser = await this.usersService.create(createUserDto.userdto);
     res.status(200).send({ createUser, message: "회원가입 성공" });
   }
@@ -54,10 +51,7 @@ export class AuthController {
 
   @UseGuards(KakaoAuthGuard)
   @Get("kakao/redirect")
-  async kakaoLoginRedirect(
-    @Req() req,
-    @Res({ passthrough: true }) res,
-  ): Promise<any> {
+  async kakaoLoginRedirect(@Req() req, @Res() res): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
 
@@ -98,7 +92,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post("signin")
-  async signIn(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
+  async signIn(@Req() req, @Res() res): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
 
@@ -130,19 +124,25 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get("mypage")
-  async getProfile(@Req() req, @Res({ passthrough: true }) res): Promise<any> {
+  async getProfile(@Req() req, @Res() res): Promise<any> {
     const user = req.user;
 
-    return res.status(200).send({ user, message: "개인정보 가져오기 완료" });
+    res.status(200).send({ user, message: "개인정보 가져오기 완료" });
   }
 
   // @UseGuards(JwtAuthGuard)
   @Patch("mypage")
-  async patchProfile(
-    @Req() req,
-    @Res({ passthrough: true }) res,
-  ): Promise<any> {
-    const updateUser = await this.usersService.update(req);
+  async patchProfile(@Req() req, @Res() res): Promise<any> {
+    const verify = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken,
+    );
+    const user_PK = await this.usersRepository.findOne({
+      user_id: verify.user.user_id,
+    });
+
+    console.log(user_PK);
+
+    const updateUser = await this.usersService.update(user_PK.id, req);
     if (updateUser === false) {
       res.status(400).send("중복된 닉네임 입니다.");
     } else {
@@ -152,7 +152,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post("signout")
-  async signOut(@Req() req, @Res({ passthrough: true }) res): Promise<string> {
+  async signOut(@Req() req, @Res() res): Promise<void> {
     //console.log(req.headers);
     const { user } = req;
     res.clearCookie("refreshToken");
@@ -160,8 +160,6 @@ export class AuthController {
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
     res.status(200).send("로그아웃 성공");
-
-    return "로그아웃 되었습니다.";
   }
 
   @Get("google")
@@ -170,10 +168,7 @@ export class AuthController {
 
   @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
-  async googleLoginCallback(
-    @Req() req,
-    @Res({ passthrough: true }) res,
-  ): Promise<any> {
+  async googleLoginCallback(@Req() req, @Res() res): Promise<any> {
     const { user } = req;
     // console.log(req.headers);
 
@@ -215,7 +210,7 @@ export class AuthController {
       user_id: verify.user.user_id,
     });
 
-    res.status(200).send({
+    return res.status(200).send({
       accessToken: req.cookies.accessToken,
       refreshToken: req.cookies.refreshToken,
       user_PK: findUserPK.id,
