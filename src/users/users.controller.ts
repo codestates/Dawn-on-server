@@ -23,7 +23,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async findAll(@Body() body, @Res({ passthrough: true }) res): Promise<any> {
+  async findAll(@Body() body, @Res() res): Promise<any> {
     const userDatas = await this.usersService.findAll();
 
     if (userDatas !== undefined) {
@@ -33,10 +33,7 @@ export class UsersController {
     }
   }
   @Get(":id")
-  async findOne(
-    @Param("id") id: string,
-    @Res({ passthrough: true }) res,
-  ): Promise<any> {
+  async findOne(@Param("id") id: string, @Res() res): Promise<any> {
     const userDatas = await this.usersService.findOne(id);
 
     if (userDatas !== undefined) {

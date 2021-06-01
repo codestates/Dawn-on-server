@@ -59,23 +59,30 @@ export class UsersService {
   }
 
   async update(user_PK: number, req: any): Promise<any> {
-    console.log(req.body);
-    const { user_nickname, user_img, user_job, user_password, user_comment } =
-      req.body;
+    // console.log(req.body);
+    const {
+      user_nickname,
+      user_img,
+      user_job,
+      user_password,
+      profile_comment,
+    } = req.body;
     const newUsers = await this.usersRepository.findOne({
       id: user_PK,
     });
-    console.log(newUsers);
+    // console.log("userNick:", user_nickname);
 
     if (user_nickname !== "") {
-      const findNickName = await this.usersRepository.findOne({
+      const findNickName = await this.usersRepository.find({
         user_nickname: user_nickname,
       });
+      console.log(findNickName);
 
-      if (findNickName === undefined) {
+      if (findNickName !== undefined) {
         newUsers.user_nickname = user_nickname;
+      } else {
+        return false;
       }
-      return false;
     }
 
     if (user_img !== "") {
@@ -85,8 +92,8 @@ export class UsersService {
       newUsers.user_job = user_job;
     }
 
-    if (user_comment !== "") {
-      newUsers.profile_comment = user_comment;
+    if (profile_comment !== "") {
+      newUsers.profile_comment = profile_comment;
     }
     if (user_password !== "") {
       newUsers.user_password = await hash(user_password, Number(salt));
