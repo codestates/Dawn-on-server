@@ -23,7 +23,7 @@ export class PostsController {
   constructor(
     private usersService: UsersService,
     private postsService: PostsService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.usersService = usersService;
     this.postsService = postsService;
@@ -34,18 +34,18 @@ export class PostsController {
   @Post("posting")
   async posting(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
 
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -64,7 +64,7 @@ export class PostsController {
     } else {
       const newPost = await this.postsService.posting(
         decoded.user.user_nickname,
-        req.body.postdatas,
+        req.body.postdatas
       );
 
       if (newPost !== undefined) {
@@ -130,18 +130,18 @@ export class PostsController {
   @Get("mainfeed")
   async mainfeed(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      // console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -179,18 +179,18 @@ export class PostsController {
   @Post("change-thumbsup")
   async change_thumbsup(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -209,7 +209,7 @@ export class PostsController {
     } else {
       const postDatas = await this.postsService.changeThumbsUp(
         decoded.user.id,
-        req.body.post_PK,
+        req.body.post_PK
       );
 
       res.status(200).send({ thumbs_up: postDatas });
@@ -219,18 +219,18 @@ export class PostsController {
   @Post("searchThumbsUp")
   async searchThumbsUp(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -249,7 +249,7 @@ export class PostsController {
     } else {
       const searchDatas = await this.postsService.searchThumbsUp(
         decoded.user.id,
-        req.body.post_PK,
+        req.body.post_PK
       );
       if (searchDatas === undefined) {
         res.status(400).send("유효하지 않은 입력입니다.");
@@ -263,20 +263,20 @@ export class PostsController {
   async getPost(@Req() req, @Res() res): Promise<any> {
     // console.log(req.cookies);
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     // console.log("decoded:", decoded);
 
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh,
+          refresh
         );
         decoded = refresh;
         // console.log("decoded:", decoded);
@@ -319,18 +319,18 @@ export class PostsController {
   @Delete("myfeed")
   async deletePost(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -350,7 +350,7 @@ export class PostsController {
       // console.log(decoded);
       const deletePostingData = await this.postsService.deletePost(
         req.body.post_PK,
-        decoded.user.id,
+        decoded.user.id
       );
       // console.log(deletePostingData);
       if (deletePostingData === true) {
@@ -364,18 +364,18 @@ export class PostsController {
   @Patch("myfeed")
   async patchPost(@Req() req, @Res() res) {
     let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -394,7 +394,7 @@ export class PostsController {
     } else {
       const patchPostingData = await this.postsService.pacthPost(
         decoded.user.id,
-        req.body.postdatas,
+        req.body.postdatas
       );
       // console.log(patchPostingData);
       if (patchPostingData === true) {

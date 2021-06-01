@@ -14,7 +14,7 @@ const salt = process.env.SALTORROUNDS;
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    private usersRepository: Repository<Users>
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
   // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
@@ -37,11 +37,11 @@ export class UsersService {
     //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      Number(salt),
+      Number(salt)
     );
 
     const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto,
+      createUserDto
     );
     return result;
   }
@@ -76,7 +76,7 @@ export class UsersService {
       const findNickName = await this.usersRepository.find({
         user_nickname: user_nickname,
       });
-      console.log(findNickName);
+      //console.log(findNickName);
 
       if (findNickName !== undefined) {
         newUsers.user_nickname = user_nickname;

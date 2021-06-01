@@ -10,7 +10,7 @@ config();
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private usersService: UsersService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -31,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const { user_id } = payload;
     const user = await this.usersService.findOne(user_id);
-    console.log(payload);
+    //console.log(payload);
     if (!user) {
       throw new UnauthorizedException("유효하지 않은 요청입니다.");
     }

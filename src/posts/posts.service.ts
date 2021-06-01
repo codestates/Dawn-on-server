@@ -234,7 +234,7 @@ export class PostsService {
 
     totalThumbUp.sort((a, b) => (a.total_thumbsup > b.total_thumbsup ? -1 : 1));
 
-    console.log(totalThumbUp);
+    //console.log(totalThumbUp);
 
     for (let i = 0; i < 10; i++) {
       if (totalThumbUp[i] !== undefined) {
@@ -279,7 +279,7 @@ export class PostsService {
 
   async userThumbsUp(postDatas: any): Promise<any> {
     const userId = postDatas.users.id;
-    console.log(userId);
+    //console.log(userId);
     return userId;
   }
 
@@ -360,7 +360,7 @@ export class PostsService {
 
   async pacthPost(post_PK: number, postingData: any): Promise<any> {
     const postId = await this.postsRepository.findOne({ id: post_PK });
-    console.log(postId);
+    //console.log(postId);
     if (postId !== undefined) {
       postId.comment = postingData.comment;
       postId.memo = postingData.memo;
