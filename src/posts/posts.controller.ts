@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Next,
   Patch,
   Post,
   Req,
@@ -31,10 +32,33 @@ export class PostsController {
 
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
-  async posting(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async posting(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -53,7 +77,7 @@ export class PostsController {
   }
 
   @Post("search-user")
-  async searchuser(@Body() body, @Res({ passthrough: true }) res) {
+  async searchuser(@Body() body, @Res() res) {
     const postDatas = await this.postsService.searchUser(body.user_nickname);
 
     if (postDatas !== undefined) {
@@ -68,7 +92,7 @@ export class PostsController {
   }
 
   @Post("search-job")
-  async searchJob(@Body() body, @Res({ passthrough: true }) res) {
+  async searchJob(@Body() body, @Res() res) {
     const postDatas = await this.postsService.searchJob(body.user_job);
 
     if (postDatas !== undefined) {
@@ -83,7 +107,7 @@ export class PostsController {
   }
 
   @Post("search-tag")
-  async searchTag(@Body() body, @Res({ passthrough: true }) res) {
+  async searchTag(@Body() body, @Res() res) {
     const tagDatas = await this.postsService.searchTagPostId(body.tag);
 
     const tagNumbers = await this.postsService.searchTagPostIdNumber(tagDatas);
@@ -104,10 +128,34 @@ export class PostsController {
   }
 
   @Get("mainfeed")
-  async mainfeed(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async mainfeed(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      // console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
+
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -129,10 +177,33 @@ export class PostsController {
   }
 
   @Post("change-thumbsup")
-  async change_thumbsup(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async change_thumbsup(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      //console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -141,16 +212,38 @@ export class PostsController {
         req.body.post_PK
       );
 
-      console.log(postDatas);
       res.status(200).send({ thumbs_up: postDatas });
     }
   }
 
   @Post("searchThumbsUp")
-  async searchThumbsUp(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async searchThumbsUp(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      //console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -167,37 +260,90 @@ export class PostsController {
   }
 
   @Get("myfeed")
-  async getPost(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async getPost(@Req() req, @Res() res): Promise<any> {
+    // console.log(req.cookies);
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
-    if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
-    } else {
-      const getPostingData = await this.postsService.getPost(decoded.user.id);
+    // console.log("decoded:", decoded);
 
-      if (getPostingData === false) {
-        res.status(404).send("유효한 유저가 아닙니다.");
-        return;
-      }
-      if (getPostingData.length === 0) {
-        res.status(400).send("포스팅 가져오기 실패: 작성된 포스팅이 없습니다.");
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      // console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
       } else {
-        res.status(200).send({
-          message: "포스팅 가져오기 성공",
-          userDatas: getPostingData.userdata,
-          postDatas: getPostingData.postdata,
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh
+        );
+        decoded = refresh;
+        // console.log("decoded:", decoded);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
         });
       }
+    }
+
+    if (decoded === null) {
+      return res.status(401).send("접근 권한이 없습니다.");
+    }
+
+    const getPostingData = await this.postsService.getPost(decoded.user.id);
+    // console.log(getPostingData);
+    if (getPostingData === false) {
+      return res.status(404).send("유효한 유저가 아닙니다.");
+    } else if (getPostingData.postdata.length === 0) {
+      return res.status(200).send({
+        message: "작성된 포스팅이 없습니다.",
+        userDatas: getPostingData.userdata,
+        postDatas: [],
+      });
+    } else {
+      return res.status(200).send({
+        message: "포스팅 가져오기 성공",
+        userDatas: getPostingData.userdata,
+        postDatas: getPostingData.postdata,
+      });
     }
   }
 
   // 컨트롤러 내에서 accessToken 복호화
   @Delete("myfeed")
-  async deletePost(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async deletePost(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      //console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -206,7 +352,7 @@ export class PostsController {
         req.body.post_PK,
         decoded.user.id
       );
-      console.log(deletePostingData);
+      // console.log(deletePostingData);
       if (deletePostingData === true) {
         res.status(200).send("포스팅 삭제 성공");
       } else {
@@ -216,10 +362,33 @@ export class PostsController {
   }
 
   @Patch("myfeed")
-  async patchPost(@Req() req, @Res({ passthrough: true }) res) {
-    const decoded = await this.tokenService.resolveAccessToken(
+  async patchPost(@Req() req, @Res() res) {
+    let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+    if (decoded === null) {
+      const refresh = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
+      );
+      // console.log("refresh", refresh);
+      if (refresh === null) {
+        return res.status(401).send("접근 권한이 없습니다.");
+      } else {
+        const accessToken = await this.tokenService.generateAccessToken(
+          refresh.user
+        );
+        decoded = await this.tokenService.resolveAccessToken(accessToken);
+
+        res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          // domain: 'localhost:3000',
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          // sameSite: 'None',
+        });
+      }
+    }
     if (decoded === null) {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
@@ -227,7 +396,7 @@ export class PostsController {
         decoded.user.id,
         req.body.postdatas
       );
-      console.log(patchPostingData);
+      // console.log(patchPostingData);
       if (patchPostingData === true) {
         res.status(200).send("포스팅 업데이트 성공");
       } else {
@@ -237,7 +406,7 @@ export class PostsController {
   }
 
   // @Post('ranking')
-  // async change_thumbsup(@Body() body, @Res({ passthrough: true }) res) {
+  // async change_thumbsup(@Body() body, @Res() res) {
   //   const postDatas = await this.postsService.changeThumbsUp(
   //     body.user_PK,
   //     body.post_PK,

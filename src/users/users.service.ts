@@ -14,7 +14,7 @@ const salt = process.env.SALTORROUNDS;
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>,
+    private usersRepository: Repository<Users>
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
   // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
@@ -23,6 +23,7 @@ export class UsersService {
     const isExistId = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
     });
+
     const isExistNick = await this.usersRepository.findOne({
       user_nickname: createUserDto.user_nickname,
     });
@@ -36,11 +37,11 @@ export class UsersService {
     //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      Number(salt),
+      Number(salt)
     );
 
     const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto,
+      createUserDto
     );
     return result;
   }
@@ -57,28 +58,31 @@ export class UsersService {
     return this.usersRepository.findOne({ id: id });
   }
 
-  async update(req): Promise<any> {
+  async update(user_PK: number, req: any): Promise<any> {
+    // console.log(req.body);
     const {
-      user_PK,
       user_nickname,
       user_img,
       user_job,
       user_password,
-      user_comment,
+      profile_comment,
     } = req.body;
     const newUsers = await this.usersRepository.findOne({
       id: user_PK,
     });
+    // console.log("userNick:", user_nickname);
 
     if (user_nickname !== "") {
-      const findNickName = await this.usersRepository.findOne({
+      const findNickName = await this.usersRepository.find({
         user_nickname: user_nickname,
       });
+      //console.log(findNickName);
 
-      if (findNickName === undefined) {
+      if (findNickName !== undefined) {
         newUsers.user_nickname = user_nickname;
+      } else {
+        return false;
       }
-      return false;
     }
 
     if (user_img !== "") {
@@ -88,8 +92,8 @@ export class UsersService {
       newUsers.user_job = user_job;
     }
 
-    if (user_comment !== "") {
-      newUsers.profile_comment = user_comment;
+    if (profile_comment !== "") {
+      newUsers.profile_comment = profile_comment;
     }
     if (user_password !== "") {
       newUsers.user_password = await hash(user_password, Number(salt));

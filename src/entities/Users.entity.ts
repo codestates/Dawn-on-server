@@ -35,7 +35,7 @@ export class Users {
   total_star: number;
 
   @Column({ default: 0 })
-  total_thumbsup: number;
+  total_thumbsup: number | null;
 
   @Column({ default: null })
   user_img: string | null;
