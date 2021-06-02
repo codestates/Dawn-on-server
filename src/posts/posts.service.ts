@@ -150,11 +150,10 @@ export class PostsService {
     return resultData;
   }
 
-  async posting(user_nickname: string, postdatas: any): Promise<any> {
+  async posting(user_PK: number, postdatas: any): Promise<any> {
     const userId = await this.usersRepository.findOne({
-      user_nickname: user_nickname,
+      id: user_PK,
     });
-    //console.log(user_nickname);
     const newPostOBJ = new Posts();
 
     const newTodoOBJ = new Todos();
@@ -174,26 +173,25 @@ export class PostsService {
 
     const postId = await this.postsRepository.save(newPostOBJ);
 
-    let total_learing_time = 0;
+    let total_learning_time = 0;
 
     for (let i = 0; i < postdatas.todos.length; i++) {
       let newTodoOBJ = new Todos();
       let el = postdatas.todos[i];
       newTodoOBJ.box_color = el.box_color;
       newTodoOBJ.learning_time = el.learning_time;
-      total_learing_time = total_learing_time + el.learning_time;
+      total_learning_time = total_learning_time + el.learning_time;
       newTodoOBJ.subject = el.subject;
       newTodoOBJ.todo_comment = el.todo_comment;
       newTodoOBJ.start_time = el.start_time;
-      if (el.checked !== undefined) {
-        newTodoOBJ.checked = el.checked;
-      }
+      newTodoOBJ.checked = false;
+
       newTodoOBJ.posts = postId.id;
 
       await this.todosRepository.save(newTodoOBJ);
     }
 
-    postId.today_learning_time = total_learing_time;
+    postId.today_learning_time = total_learning_time;
 
     const lastPost = await this.postsRepository.save(postId);
 
@@ -215,6 +213,8 @@ export class PostsService {
 
     const newTodos = await this.todosRepository.find({ posts: lastPost.id });
     userId.total_posting = userId.total_posting + 1;
+    userId.total_learning_time =
+      userId.total_learning_time + postId.today_learning_time;
     await this.usersRepository.save(userId);
 
     return {
@@ -252,13 +252,14 @@ export class PostsService {
 
     let postdata = await this.postsRepository.find({ users: userId });
 
-    let total_learing_time = 0;
+    let total_learning_time = 0;
 
     for (let i = 0; i < postdata.length; i++) {
-      total_learing_time = total_learing_time + postdata[i].today_learning_time;
+      total_learning_time =
+        total_learning_time + postdata[i].today_learning_time;
     }
 
-    return total_learing_time;
+    return total_learning_time;
   }
 
   async totalThumbUp(user_nickname: string): Promise<number> {
@@ -348,6 +349,8 @@ export class PostsService {
     const postId = await this.postsRepository.findOne({ id: post_PK });
     const userId = await this.usersRepository.findOne({ id: user_PK });
     userId.total_posting = userId.total_posting - 1;
+    userId.total_learning_time =
+      userId.total_learning_time - postId.today_learning_time;
 
     if (postId) {
       await this.postsRepository.delete(postId.id);
@@ -374,7 +377,9 @@ export class PostsService {
       where: { id: postingData.post_PK },
     });
     const check = await this.checkPK(decode_user_id, postId);
-    console.log(check);
+    //console.log(postId.todos);
+    //console.log(typeof postId.todos);
+    // 관계설정을 해두면, 객체형식으로 대체 할수는 있지만 객체안에 직접접근은 불가
     if (check) {
       if (postId !== undefined) {
         postId.comment = postingData.comment;

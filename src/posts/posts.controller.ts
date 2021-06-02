@@ -64,7 +64,7 @@ export class PostsController {
       res.status(401).send("접근 권한이 없습니다.");
     } else {
       const newPost = await this.postsService.posting(
-        decoded.user.user_nickname,
+        decoded.user.id,
         req.body.postdatas
       );
 
