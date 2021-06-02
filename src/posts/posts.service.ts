@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>
+    private likesRepository: Repository<Likes>,
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -93,9 +93,9 @@ export class PostsService {
     const userdata = await this.usersRepository.find({
       where: { user_job: user_job },
     });
+
     let resultData = [];
     let userId = [];
-
     userdata.map((el) => {
       userId.push(el.id);
     });
@@ -240,6 +240,44 @@ export class PostsService {
       if (totalThumbUp[i] !== undefined) {
         resultData.push(totalThumbUp[i]);
       }
+    }
+
+    return resultData;
+  }
+
+  // 인기순 정렬
+  async searchPopular(user_job?: string): Promise<any> {
+    let thumbs_up;
+    if (user_job === undefined) {
+      thumbs_up = await this.postsRepository.find({
+        relations: ["users", "todos", "tags"],
+      });
+    } else {
+      const userdata = await this.usersRepository.find({
+        where: { user_job: user_job },
+      });
+
+      let userId = [];
+      let postdatas = [];
+      userdata.map((el) => {
+        userId.push(el.id);
+      });
+      for (let i = 0; i < userId.length; i++) {
+        let posts = await this.postsRepository.find({
+          relations: ["users", "todos", "tags"],
+          where: { users: userId[i] },
+        });
+        postdatas.push(...posts);
+      }
+      thumbs_up = postdatas;
+    }
+
+    let resultData = [];
+
+    thumbs_up.sort((a, b) => (a.thumbs_up > b.thumbs_up ? -1 : 1));
+
+    if (thumbs_up !== undefined) {
+      resultData.push(...thumbs_up);
     }
 
     return resultData;
