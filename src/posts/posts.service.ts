@@ -447,13 +447,15 @@ export class PostsService {
     // 관계설정을 해두면, 객체형식으로 대체 할수는 있지만 객체안에 직접접근은 불가
     if (check) {
       if (postId !== undefined) {
+        console.log(postingData.comment);
         postId.comment = postingData.comment;
         postId.memo = postingData.memo;
-        this.updateTables("todos", postId, postingData);
         postId.sticker = postingData.sticker;
-        this.updateTables("tags", postId, postingData);
-        // postId.today_learning_time = postingData.today_learning_time;
         await this.postsRepository.save(postId);
+        await this.updateTables("todos", postId, postingData);
+        await this.updateTables("tags", postId, postingData);
+        // postId.today_learning_time = postingData.today_learning_time;
+
         return true;
       } else {
         return false;
