@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>
+    private likesRepository: Repository<Likes>,
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -371,6 +371,54 @@ export class PostsService {
     }
   }
 
+  async updateTables(table: string, postData: any, reqData: any): Promise<any> {
+    let tablesNumber = [];
+    let reqtodos = reqData.todos;
+    let reqtags = reqData.tags;
+    postData.map((el) => {
+      postData[table].id;
+    });
+    if (table === "todos") {
+      for (let i = 0; i < tablesNumber.length; i++) {
+        const todos = await this.todosRepository.findOne({
+          id: tablesNumber[i],
+        });
+        const posts = await this.postsRepository.findOne({ id: todos.posts });
+        const users = await this.usersRepository.findOne({ id: posts.users });
+        // 기존 공부시간을 지우고 새로운 공부시간을 더해준다.
+        posts.today_learning_time =
+          posts.today_learning_time - todos.learning_time;
+        users.total_learning_time =
+          users.total_learning_time - todos.learning_time;
+
+        todos.learning_time = reqtodos[i].learning_time;
+
+        posts.today_learning_time =
+          posts.today_learning_time + todos.learning_time;
+        users.total_learning_time =
+          users.total_learning_time + todos.learning_time;
+        //////////////////////////////////////////
+        await this.postsRepository.save(posts);
+        await this.usersRepository.save(users);
+
+        todos.box_color = reqtodos[i].box_color;
+        todos.todo_comment = reqtodos[i].todo_comment;
+        todos.subject = reqtodos[i].subject;
+        todos.checked = reqtodos[i].checked;
+        todos.start_time = reqtodos[i].start_time;
+      }
+    } else if (table === "tags") {
+      for (let i = 0; i < tablesNumber.length; i++) {
+        const tags = await this.tagsRepository.findOne({
+          id: tablesNumber[i],
+        });
+        tags.tag = reqtags[i].tag;
+
+        await this.tagsRepository.save(tags);
+      }
+    }
+  }
+
   async pacthPost(decode_user_id: number, postingData: any): Promise<any> {
     const postId = await this.postsRepository.findOne({
       relations: ["users", "todos", "tags"],
@@ -384,10 +432,10 @@ export class PostsService {
       if (postId !== undefined) {
         postId.comment = postingData.comment;
         postId.memo = postingData.memo;
-        postId.todos = postingData.todos;
+        this.updateTables("todos", postId, postingData);
         postId.sticker = postingData.sticker;
-        postId.tags = postingData.tags;
-        postId.today_learning_time = postingData.today_learning_time;
+        this.updateTables("tags", postId, postingData);
+        // postId.today_learning_time = postingData.today_learning_time;
         await this.postsRepository.save(postId);
         return true;
       } else {
