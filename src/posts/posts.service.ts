@@ -150,11 +150,10 @@ export class PostsService {
     return resultData;
   }
 
-  async posting(user_nickname: string, postdatas: any): Promise<any> {
+  async posting(user_PK: number, postdatas: any): Promise<any> {
     const userId = await this.usersRepository.findOne({
-      user_nickname: user_nickname,
+      id: user_PK,
     });
-    //console.log(user_nickname);
     const newPostOBJ = new Posts();
 
     const newTodoOBJ = new Todos();
@@ -174,26 +173,25 @@ export class PostsService {
 
     const postId = await this.postsRepository.save(newPostOBJ);
 
-    let total_learing_time = 0;
+    let total_learning_time = 0;
 
     for (let i = 0; i < postdatas.todos.length; i++) {
       let newTodoOBJ = new Todos();
       let el = postdatas.todos[i];
       newTodoOBJ.box_color = el.box_color;
       newTodoOBJ.learning_time = el.learning_time;
-      total_learing_time = total_learing_time + el.learning_time;
+      total_learning_time = total_learning_time + el.learning_time;
       newTodoOBJ.subject = el.subject;
       newTodoOBJ.todo_comment = el.todo_comment;
       newTodoOBJ.start_time = el.start_time;
-      if (el.checked !== undefined) {
-        newTodoOBJ.checked = el.checked;
-      }
+      newTodoOBJ.checked = false;
+
       newTodoOBJ.posts = postId.id;
 
       await this.todosRepository.save(newTodoOBJ);
     }
 
-    postId.today_learning_time = total_learing_time;
+    postId.today_learning_time = total_learning_time;
 
     const lastPost = await this.postsRepository.save(postId);
 
@@ -215,6 +213,8 @@ export class PostsService {
 
     const newTodos = await this.todosRepository.find({ posts: lastPost.id });
     userId.total_posting = userId.total_posting + 1;
+    userId.total_learning_time =
+      userId.total_learning_time + postId.today_learning_time;
     await this.usersRepository.save(userId);
 
     return {
@@ -252,13 +252,14 @@ export class PostsService {
 
     let postdata = await this.postsRepository.find({ users: userId });
 
-    let total_learing_time = 0;
+    let total_learning_time = 0;
 
     for (let i = 0; i < postdata.length; i++) {
-      total_learing_time = total_learing_time + postdata[i].today_learning_time;
+      total_learning_time =
+        total_learning_time + postdata[i].today_learning_time;
     }
 
-    return total_learing_time;
+    return total_learning_time;
   }
 
   async totalThumbUp(user_nickname: string): Promise<number> {
@@ -348,6 +349,8 @@ export class PostsService {
     const postId = await this.postsRepository.findOne({ id: post_PK });
     const userId = await this.usersRepository.findOne({ id: user_PK });
     userId.total_posting = userId.total_posting - 1;
+    userId.total_learning_time =
+      userId.total_learning_time - postId.today_learning_time;
 
     if (postId) {
       await this.postsRepository.delete(postId.id);
@@ -359,31 +362,100 @@ export class PostsService {
   }
   async checkPK(decode_user_id: number, postData: any): Promise<boolean> {
     const postId = postData.users.id;
-    console.log(decode_user_id);
-    console.log(postData.users.id);
+    //console.log(decode_user_id);
+    //console.log(postData.users.id);
     if (decode_user_id !== postId) {
       return false;
     } else {
       return true;
     }
   }
+  async returnPK(data: any): Promise<any> {
+    return data.id;
+  }
+  async updateTables(table: string, postData: any, reqData: any): Promise<any> {
+    let tablesNumber = [];
+    let reqtodos = reqData.todos;
+    let reqtags = reqData.tags;
+    //console.log("태그", reqtags);
 
-  async pacthPost(decode_user_id: number, postingData: any): Promise<any> {
+    postData[table].map((el) => {
+      tablesNumber.push(el.id);
+    });
+    if (table === "todos") {
+      for (let i = 0; i < tablesNumber.length; i++) {
+        const todos = await this.todosRepository.findOne({
+          relations: ["posts"],
+          where: { id: tablesNumber[i] },
+        });
+        const post_PK = await this.returnPK(todos.posts);
+
+        // console.log("투두", todos.posts);
+        const posts = await this.postsRepository.findOne({
+          relations: ["users"],
+          where: { id: post_PK },
+        });
+        const user_PK = await this.returnPK(posts.users);
+        //console.log("포스트", posts);
+        const users = await this.usersRepository.findOne({ id: user_PK });
+        // console.log("유저", users);
+        // 기존 공부시간을 지우고 새로운 공부시간을 더해준다.
+        posts.today_learning_time =
+          posts.today_learning_time - todos.learning_time;
+        users.total_learning_time =
+          users.total_learning_time - todos.learning_time;
+
+        todos.learning_time = reqtodos[i].learning_time;
+
+        posts.today_learning_time =
+          posts.today_learning_time + todos.learning_time;
+        users.total_learning_time =
+          users.total_learning_time + todos.learning_time;
+        //////////////////////////////////////////
+        await this.postsRepository.save(posts);
+        await this.usersRepository.save(users);
+
+        todos.box_color = reqtodos[i].box_color;
+        todos.todo_comment = reqtodos[i].todo_comment;
+        todos.subject = reqtodos[i].subject;
+        todos.checked = reqtodos[i].checked;
+        todos.start_time = reqtodos[i].start_time;
+
+        await this.todosRepository.save(todos);
+      }
+    } else if (table === "tags") {
+      for (let i = 0; i < tablesNumber.length; i++) {
+        const tags = await this.tagsRepository.findOne({
+          id: tablesNumber[i],
+        });
+        /*       console.log(reqtags); */
+        tags.tag = reqtags[i];
+
+        await this.tagsRepository.save(tags);
+      }
+    }
+  }
+
+  async patchPost(decode_user_id: number, postingData: any): Promise<any> {
     const postId = await this.postsRepository.findOne({
       relations: ["users", "todos", "tags"],
       where: { id: postingData.post_PK },
     });
     const check = await this.checkPK(decode_user_id, postId);
-    console.log(check);
+    //console.log(postId.todos);
+    //console.log(typeof postId.todos);
+    // 관계설정을 해두면, 객체형식으로 대체 할수는 있지만 객체안에 직접접근은 불가
     if (check) {
       if (postId !== undefined) {
+        console.log(postingData.comment);
         postId.comment = postingData.comment;
         postId.memo = postingData.memo;
-        postId.todos = postingData.todos;
         postId.sticker = postingData.sticker;
-        postId.tags = postingData.tags;
-        postId.today_learning_time = postingData.today_learning_time;
         await this.postsRepository.save(postId);
+        await this.updateTables("todos", postId, postingData);
+        await this.updateTables("tags", postId, postingData);
+        // postId.today_learning_time = postingData.today_learning_time;
+
         return true;
       } else {
         return false;
