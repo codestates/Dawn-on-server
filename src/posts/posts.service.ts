@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>,
+    private likesRepository: Repository<Likes>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -362,29 +362,43 @@ export class PostsService {
   }
   async checkPK(decode_user_id: number, postData: any): Promise<boolean> {
     const postId = postData.users.id;
-    console.log(decode_user_id);
-    console.log(postData.users.id);
+    //console.log(decode_user_id);
+    //console.log(postData.users.id);
     if (decode_user_id !== postId) {
       return false;
     } else {
       return true;
     }
   }
-
+  async returnPK(data: any): Promise<any> {
+    return data.id;
+  }
   async updateTables(table: string, postData: any, reqData: any): Promise<any> {
     let tablesNumber = [];
     let reqtodos = reqData.todos;
     let reqtags = reqData.tags;
-    postData.map((el) => {
-      postData[table].id;
+    //console.log("태그", reqtags);
+
+    postData[table].map((el) => {
+      tablesNumber.push(el.id);
     });
     if (table === "todos") {
       for (let i = 0; i < tablesNumber.length; i++) {
         const todos = await this.todosRepository.findOne({
-          id: tablesNumber[i],
+          relations: ["posts"],
+          where: { id: tablesNumber[i] },
         });
-        const posts = await this.postsRepository.findOne({ id: todos.posts });
-        const users = await this.usersRepository.findOne({ id: posts.users });
+        const post_PK = await this.returnPK(todos.posts);
+
+        // console.log("투두", todos.posts);
+        const posts = await this.postsRepository.findOne({
+          relations: ["users"],
+          where: { id: post_PK },
+        });
+        const user_PK = await this.returnPK(posts.users);
+        //console.log("포스트", posts);
+        const users = await this.usersRepository.findOne({ id: user_PK });
+        // console.log("유저", users);
         // 기존 공부시간을 지우고 새로운 공부시간을 더해준다.
         posts.today_learning_time =
           posts.today_learning_time - todos.learning_time;
@@ -406,20 +420,23 @@ export class PostsService {
         todos.subject = reqtodos[i].subject;
         todos.checked = reqtodos[i].checked;
         todos.start_time = reqtodos[i].start_time;
+
+        await this.todosRepository.save(todos);
       }
     } else if (table === "tags") {
       for (let i = 0; i < tablesNumber.length; i++) {
         const tags = await this.tagsRepository.findOne({
           id: tablesNumber[i],
         });
-        tags.tag = reqtags[i].tag;
+        /*       console.log(reqtags); */
+        tags.tag = reqtags[i];
 
         await this.tagsRepository.save(tags);
       }
     }
   }
 
-  async pacthPost(decode_user_id: number, postingData: any): Promise<any> {
+  async patchPost(decode_user_id: number, postingData: any): Promise<any> {
     const postId = await this.postsRepository.findOne({
       relations: ["users", "todos", "tags"],
       where: { id: postingData.post_PK },
