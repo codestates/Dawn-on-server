@@ -23,12 +23,12 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
     accessToken: string,
     refreshToken: string,
     profile: any,
-    done: any
+    done: any,
   ): Promise<any> {
     const { nickname, profileImageURL } = profile._json.kakao_account.profile;
     //console.log(profile._json.kakao_account.profile);
     //console.log(accessToken);
-    const users = {
+    const users: any = {
       user_id: profile._json.kakao_account.email,
       user_nickname: nickname,
       user_job: "전체",
@@ -37,7 +37,10 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
       refreshToken,
     };
 
-    const { user } = await this.authService.validateOAuthLogin(users, "kakao");
+    const { user }: any = await this.authService.validateOAuthLogin(
+      users,
+      "kakao",
+    );
 
     done(null, user);
   }

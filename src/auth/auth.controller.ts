@@ -31,7 +31,7 @@ export class AuthController {
     private usersRepository: Repository<Users>,
     private authService: AuthService,
     private usersService: UsersService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.authService = authService;
     this.usersService = usersService;
@@ -41,22 +41,28 @@ export class AuthController {
 
   @Post("signup")
   async create(@Body() createUserDto: any, @Res() res): Promise<any> {
-    const createUser = await this.usersService.create(createUserDto.userdto);
+    const createUser: Users = await this.usersService.create(
+      createUserDto.userdto
+    );
     res.status(200).send({ createUser, message: "회원가입 성공" });
   }
 
   @UseGuards(KakaoAuthGuard)
   @Get("kakao")
-  async kakaoLogin(@Req() req) {}
+  async kakaoLogin(@Req() req): Promise<void> {}
 
   @UseGuards(KakaoAuthGuard)
   @Get("kakao/redirect")
   async kakaoLoginRedirect(@Req() req, @Res() res): Promise<any> {
-    const { user } = req;
+    const { user }: any = req;
     // console.log(req.headers);
 
-    const accessToken = await this.tokenService.generateAccessToken(user);
-    const refreshToken = await this.tokenService.generateRefreshToken(user);
+    const accessToken: string = await this.tokenService.generateAccessToken(
+      user
+    );
+    const refreshToken: string = await this.tokenService.generateRefreshToken(
+      user
+    );
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -92,12 +98,16 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post("signin")
-  async signIn(@Req() req, @Res() res): Promise<any> {
-    const { user } = req;
+  async signIn(@Req() req, @Res() res): Promise<void> {
+    const { user }: any = req;
     // console.log(req.headers);
 
-    const accessToken = await this.tokenService.generateAccessToken(user);
-    const refreshToken = await this.tokenService.generateRefreshToken(user);
+    const accessToken: string = await this.tokenService.generateAccessToken(
+      user
+    );
+    const refreshToken: string = await this.tokenService.generateRefreshToken(
+      user
+    );
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -125,20 +135,20 @@ export class AuthController {
 
   // @UseGuards(JwtAuthGuard)
   @Get("mypage")
-  async getProfile(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+  async getProfile(@Req() req, @Res() res): Promise<void> {
+    let decoded: any = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+      const refresh: any = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+        const accessToken: string = await this.tokenService.generateAccessToken(
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -152,27 +162,26 @@ export class AuthController {
         });
       }
     }
-    const user = decoded.user;
-
+    const user: Users = decoded.user;
     res.status(200).send({ user, message: "개인정보 가져오기 완료" });
   }
 
   // @UseGuards(JwtAuthGuard)
   @Patch("mypage")
   async patchProfile(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+    let decoded: any = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+      const refresh: any = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+        const accessToken: string = await this.tokenService.generateAccessToken(
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -187,13 +196,13 @@ export class AuthController {
       }
     }
 
-    const user_PK = await this.usersRepository.findOne({
+    const user_PK: Users = await this.usersRepository.findOne({
       user_id: decoded.user.user_id,
     });
 
     // console.log("user_pk:", user_PK);
 
-    const updateUser = await this.usersService.update(user_PK.id, req);
+    const updateUser: any = await this.usersService.update(user_PK.id, req);
     if (updateUser === false) {
       res.status(400).send("중복된 닉네임 입니다.");
     } else {
@@ -202,20 +211,20 @@ export class AuthController {
   }
 
   @Post("signout")
-  async signOut(@Req() req, @Res() res): Promise<void> {
-    let decoded = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+  async signOut(@Req() req, @Res() res): Promise<any> {
+    let decoded: any = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+      const refresh: any = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
       );
-      console.log("refresh", refresh);
+      // console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+        const accessToken: string = await this.tokenService.generateAccessToken(
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
@@ -229,7 +238,7 @@ export class AuthController {
         });
       }
     }
-    const { user } = decoded;
+    const { user }: any = decoded;
     res.clearCookie("refreshToken");
     res.clearCookie("accessToken");
     await this.tokenService.deleteRefreshTokenFromUser(user);
@@ -239,16 +248,20 @@ export class AuthController {
 
   @Get("google")
   @UseGuards(GoogleAuthGuard)
-  async googleLogin(@Req() req) {}
+  async googleLogin(@Req() req): Promise<void> {}
 
   @Get("google/redirect")
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(@Req() req, @Res() res): Promise<any> {
-    const { user } = req;
+    const { user }: any = req;
     // console.log(req.headers);
 
-    const accessToken = await this.tokenService.generateAccessToken(user);
-    const refreshToken = await this.tokenService.generateRefreshToken(user);
+    const accessToken: string = await this.tokenService.generateAccessToken(
+      user
+    );
+    const refreshToken: string = await this.tokenService.generateRefreshToken(
+      user
+    );
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -277,21 +290,21 @@ export class AuthController {
   }
 
   @Get("signin/check")
-  async checkUser(@Req() req, @Res() res) {
-    let verify = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+  async checkUser(@Req() req, @Res() res): Promise<any> {
+    let verify: any = await this.tokenService.resolveAccessToken(
+      req.cookies.accessToken
     );
 
     if (verify === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+      const refresh: any = await this.tokenService.decodeRefreshToken(
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
         return res.status(401).send("접근 권한이 없습니다.");
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
-          refresh.user,
+        const accessToken: string = await this.tokenService.generateAccessToken(
+          refresh.user
         );
         // console.log("accsses", accessToken);
         verify = await this.tokenService.resolveAccessToken(accessToken);
@@ -307,7 +320,7 @@ export class AuthController {
       }
     }
 
-    const findUserPK = await this.usersRepository.findOne({
+    const findUserPK: Users = await this.usersRepository.findOne({
       user_id: verify.user.user_id,
     });
 

@@ -18,7 +18,7 @@ export class TokenService {
     private usersService: UsersService,
 
     @InjectRepository(RefreshToken)
-    private refreshRepository: Repository<RefreshToken>,
+    private refreshRepository: Repository<RefreshToken>
   ) {
     this.refreshRepository = refreshRepository;
     this.usersRepository = usersRepository;
@@ -32,10 +32,10 @@ export class TokenService {
 
   // 리프레쉬 토큰 생성 및 디비 저장.
   async createRefreshToken(user: Users): Promise<RefreshToken> {
-    const refreshToken = new RefreshToken();
+    const refreshToken: RefreshToken = new RefreshToken();
     refreshToken.user = user;
 
-    const existedToken = await this.refreshRepository
+    const existedToken: any = await this.refreshRepository
       .createQueryBuilder("refreshToken")
       .leftJoinAndSelect("refreshToken.user", "user")
       .where("user.id = :id", { id: user.id })
@@ -56,9 +56,9 @@ export class TokenService {
   // 리프레쉬 토큰 암호화
   async generateRefreshToken(user: any): Promise<string> {
     const token: RefreshToken = await this.createRefreshToken(user);
-    const payload = { user_id: user.user_id, user: user };
+    const payload: any = { user_id: user.user_id, user: user };
 
-    const opts = {
+    const opts: any = {
       jwtid: String(token.id),
       secret: process.env.REFRESH_TOKEN_SECRET,
       expiresIn: "30d",
@@ -68,10 +68,11 @@ export class TokenService {
 
   // 유요한 리프레쉬 토큰인지 확인.
   async resolveRefreshToken(
-    encoded: string,
+    encoded: string
   ): Promise<{ user: Users; token: RefreshToken }> {
-    const payload = await this.decodeRefreshToken(encoded);
-    const token = await this.getStoredTokenFromRefreshTokenPayload(payload);
+    const payload: any = await this.decodeRefreshToken(encoded);
+    const token: RefreshToken =
+      await this.getStoredTokenFromRefreshTokenPayload(payload);
 
     if (!token) {
       throw new ForbiddenException({
@@ -81,7 +82,7 @@ export class TokenService {
       });
     }
 
-    const user = await this.getUserFromRefreshTokenPayload(payload);
+    const user: Users = await this.getUserFromRefreshTokenPayload(payload);
 
     if (!user) {
       throw new ForbiddenException({
@@ -120,7 +121,7 @@ export class TokenService {
 
   // 우리 유저가 맞는지 확인
   async getUserFromRefreshTokenPayload(payload: any): Promise<Users> {
-    const subId = payload.user;
+    const subId: any = payload.user;
 
     if (!subId) {
       throw new ForbiddenException({
@@ -135,9 +136,9 @@ export class TokenService {
 
   // 만료된 토큰인지 확인
   async getStoredTokenFromRefreshTokenPayload(
-    payload: any,
+    payload: any
   ): Promise<RefreshToken> {
-    const tokenId = payload.user_id;
+    const tokenId: string = payload.user_id;
     if (!tokenId) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -160,9 +161,9 @@ export class TokenService {
 
   // 엑세스 토큰 암호화
   async generateAccessToken(user: any): Promise<string> {
-    const payload = { user_id: user.user_id, user: user };
+    const payload: any = { user_id: user.user_id, user: user };
 
-    const opts = {
+    const opts: any = {
       secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: "10s",
     };
@@ -170,7 +171,7 @@ export class TokenService {
   }
 
   // 엑세스 토큰 유효성 검사
-  async resolveAccessToken(encoded: string) {
+  async resolveAccessToken(encoded: string): Promise<any> {
     try {
       return this.jwtService.verify(encoded, {
         secret: process.env.ACCESS_TOKEN_SECRET,
@@ -182,21 +183,26 @@ export class TokenService {
 
   // 만료 엑세스 토큰 리프레쉬 토큰으로 재발급
   async createAccessTokenFromRefreshToken(
-    refresh: string,
+    refresh: string
   ): Promise<{ token: string; user: Users }> {
-    const { user } = await this.resolveRefreshToken(refresh);
+    const {
+      user,
+    }: {
+      user: Users;
+      token: RefreshToken;
+    } = await this.resolveRefreshToken(refresh);
 
-    const token = await this.generateAccessToken(user);
+    const token:string = await this.generateAccessToken(user);
 
     return { user, token };
   }
 
   async regenerationToken(req: any): Promise<any> {
     let verify: any;
-    let accessToken: any;
+    let accessToken: string;
     if (req.user === null) {
-      const refresh = await this.decodeRefreshToken(req.cookies.refreshToken);
-      console.log("refresh", refresh);
+      const refresh:any = await this.decodeRefreshToken(req.cookies.refreshToken);
+      //console.log("refresh", refresh);
       if (refresh === null) {
         return false;
       } else {

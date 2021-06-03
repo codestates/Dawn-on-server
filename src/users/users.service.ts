@@ -14,17 +14,17 @@ const salt = process.env.SALTORROUNDS;
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>
+    private usersRepository: Repository<Users>,
   ) {}
   //   private users: Users[] = []; // 데이터베이스 정보를 넣으면 됌.
   // createUserDto.user.id = req.body.user_id (타입은 컨트롤러에서 명시하였음)
   // 즉 DB안에 user_id와 req요청이 들어온 user_id가 일치하는것을 찾는 과정
-  async create(createUserDto): Promise<any> {
-    const isExistId = await this.usersRepository.findOne({
+  async create(createUserDto: any): Promise<any> {
+    const isExistId: Users = await this.usersRepository.findOne({
       user_id: createUserDto.user_id,
     });
 
-    const isExistNick = await this.usersRepository.findOne({
+    const isExistNick: Users = await this.usersRepository.findOne({
       user_nickname: createUserDto.user_nickname,
     });
     if (isExistId || isExistNick) {
@@ -37,11 +37,11 @@ export class UsersService {
     //req.body.user_pawssword(즉 req요청으로 들어온 비밀번호를 해싱하는 과정)
     createUserDto.user_password = await hash(
       createUserDto.user_password,
-      Number(salt)
+      Number(salt),
     );
 
-    const { user_password, ...result } = await this.usersRepository.save(
-      createUserDto
+    const { user_password, ...result }: any = await this.usersRepository.save(
+      createUserDto,
     );
     return result;
   }
@@ -66,14 +66,14 @@ export class UsersService {
       user_job,
       user_password,
       profile_comment,
-    } = req.body;
-    const newUsers = await this.usersRepository.findOne({
+    }: any = req.body;
+    const newUsers: Users = await this.usersRepository.findOne({
       id: user_PK,
     });
     // console.log("userNick:", user_nickname);
 
     if (user_nickname !== "") {
-      const findNickName = await this.usersRepository.find({
+      const findNickName: Users[] = await this.usersRepository.find({
         user_nickname: user_nickname,
       });
       //console.log(findNickName);
@@ -99,7 +99,7 @@ export class UsersService {
       newUsers.user_password = await hash(user_password, Number(salt));
     }
 
-    const userData = await this.usersRepository.save(newUsers);
+    const userData: Users = await this.usersRepository.save(newUsers);
 
     return userData;
   }
