@@ -4,13 +4,14 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { TokenService } from "src/auth/token.service";
 import { CreateUserDto } from "src/dtos/create-user.dto";
 import { UsersService } from "src/users/users.service";
+import { Users } from "src/entities/Users.entity";
 import { config } from "dotenv";
 config();
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private usersService: UsersService,
-    private tokenService: TokenService
+    private tokenService: TokenService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -20,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     this.tokenService = tokenService;
     this.usersService = usersService;
   }
-  async validate(payload: any) {
+  async validate(payload: any): Promise<any> {
     /*        const accessTokenIat = this.tokenService.resolveAccessToken(
       payload.accessToken
     );
@@ -29,8 +30,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("유효하지 않은 토큰입니다.");
     } */
 
-    const { user_id } = payload;
-    const user = await this.usersService.findOne(user_id);
+    const { user_id }: any = payload;
+    const user: Users = await this.usersService.findOne(user_id);
     //console.log(payload);
     if (!user) {
       throw new UnauthorizedException("유효하지 않은 요청입니다.");

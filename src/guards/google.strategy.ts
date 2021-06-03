@@ -26,9 +26,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    const { displayName, emails, photos, provider } = profile;
-    // console.log(profile);
-    const users = {
+    const { displayName, emails, photos, provider }: any = profile;
+
+    const users: any = {
       user_id: emails[0].value,
       user_nickname: displayName,
       user_job: "전체",
@@ -37,7 +37,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       refreshToken,
     };
 
-    const { user } = await this.authService.validateOAuthLogin(users, "google");
+    const { user }: any = await this.authService.validateOAuthLogin(
+      users,
+      "google",
+    );
 
     done(null, user);
   }
