@@ -1,7 +1,6 @@
 <a href="https://dawn-on.club">![](https://img.shields.io/badge/PROJECT-Dawn:on-8085f1?style=for-the-badge) </a>
 ![](https://img.shields.io/badge/Team-Done:up-blue?style=for-the-badge)
 # Dawn:on
-**색다른 시작을 준비하는 당신의 하루를 채워주세요🌈**
 
 <img src="https://user-images.githubusercontent.com/75114956/120579352-52355c80-c462-11eb-9837-6164ccdee041.jpeg?raw=true"  width="850" height="500">
 
