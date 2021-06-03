@@ -18,7 +18,7 @@ export class PostingStrategy extends PassportStrategy(Strategy) {
     this.tokenService = tokenService;
   }
   async validate(payload: any, @Body() body): Promise<any> {
-    const accessTokenData = this.tokenService.resolveAccessToken(
+    const accessTokenData: any = this.tokenService.resolveAccessToken(
       payload.accessToken,
     );
 
