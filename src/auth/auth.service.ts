@@ -28,10 +28,10 @@ export class AuthService {
   }
 
   async validateUser(user_id: string, user_password: string): Promise<any> {
-    const user = await this.usersRepository.findOne({
+    const user: Users = await this.usersRepository.findOne({
       user_id: user_id,
     });
-    console.log(user);
+    //console.log(user);
     if (!user) {
       throw new ForbiddenException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -39,19 +39,19 @@ export class AuthService {
         error: "Forbidden",
       });
     }
-    console.log(user_password);
-    console.log(user.user_password);
+    //console.log(user_password);
+    // console.log(user.user_password);
     let isMatch: boolean;
     if (await compare(user_password, user.user_password)) {
-      console.log("true");
+      //console.log("true");
       isMatch = true;
     } else {
-      console.log("false");
+      //console.log("false");
       isMatch = false;
     }
 
     if (isMatch) {
-      const { user_password, ...result } = user;
+      const { user_password, ...result }: any = user;
       return result;
     } else {
       throw new ForbiddenException({
@@ -80,11 +80,11 @@ export class AuthService {
   // }
 
   async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
-    const { user_id, user_img, user_nickname, user_job } = userProfile;
-    let user = await this.usersService.findOne(`${user_id}[AUTH]`);
+    const { user_id, user_img, user_nickname, user_job }: any = userProfile;
+    let user: Users = await this.usersService.findOne(`${user_id}[AUTH]`);
 
     if (!user) {
-      const newUser = new Users();
+      const newUser: Users = new Users();
       newUser.user_id = `${user_id}[AUTH]`;
       newUser.user_password = await hash(Math.random().toString(36), 10);
       newUser.user_nickname = `${user_nickname}`; // 초기 닉네임은 그냥 아이디로.
@@ -92,7 +92,7 @@ export class AuthService {
       newUser.user_img = user_img;
       newUser.provider = provider;
       user = await this.usersService.create(newUser);
-      console.log("newuser: ", user);
+      //console.log("newuser: ", user);
     }
 
     return { user };
