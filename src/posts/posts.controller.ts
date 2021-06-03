@@ -1,13 +1,17 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Next,
+  NotFoundException,
   Patch,
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { TokenService } from "src/auth/token.service";
@@ -32,7 +36,7 @@ export class PostsController {
 
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
-  async posting(@Req() req, @Res() res) {
+  async posting(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -42,7 +46,11 @@ export class PostsController {
       );
 
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -61,7 +69,11 @@ export class PostsController {
     }
     //console.log(decoded);
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       const newPost = await this.postsService.posting(
         decoded.user.id,
@@ -71,14 +83,18 @@ export class PostsController {
       if (newPost !== undefined) {
         res.status(200).send({ message: "포스팅 요청 성공" });
       } else {
-        res.status(400).send({ message: "올바르지 않은 요청입니다." });
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `올바르지 않은 요청입니다.`,
+          error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+        });
       }
     }
     // console.log(req);
   }
 
   @Post("search-user")
-  async searchuser(@Body() body, @Res() res) {
+  async searchuser(@Body() body, @Res() res): Promise<any> {
     const postDatas = await this.postsService.searchUser(body.user_nickname);
 
     if (postDatas !== undefined) {
@@ -88,12 +104,16 @@ export class PostsController {
         message: "닉네임별 포스트 데이터 가져오기 완료",
       });
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `올바르지 않은 요청입니다.`,
+        error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+      });
     }
   }
 
   @Post("search-job")
-  async searchJob(@Body() body, @Res() res) {
+  async searchJob(@Body() body, @Res() res): Promise<any> {
     const postDatas = await this.postsService.searchJob(body.user_job);
 
     if (postDatas !== undefined) {
@@ -103,12 +123,16 @@ export class PostsController {
         message: "직업별 포스트 데이터 가져오기 완료",
       });
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `올바르지 않은 요청입니다.`,
+        error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+      });
     }
   }
 
   @Post("search-tag")
-  async searchTag(@Body() body, @Res() res) {
+  async searchTag(@Body() body, @Res() res): Promise<any> {
     const tagDatas = await this.postsService.searchTagPostId(body.tag);
 
     const tagNumbers = await this.postsService.searchTagPostIdNumber(tagDatas);
@@ -124,12 +148,16 @@ export class PostsController {
         message: "태그별 포스트 데이터 가져오기 완료.",
       });
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `올바르지 않은 요청입니다.`,
+        error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+      });
     }
   }
 
   @Post("search-popular")
-  async searchPopular(@Body() body, @Res() res) {
+  async searchPopular(@Body() body, @Res() res): Promise<any> {
     let postDatas;
     const user_job = body.user_job;
 
@@ -147,12 +175,16 @@ export class PostsController {
         message: "인기순 포스트 데이터 가져오기 완료.",
       });
     } else {
-      res.status(400).send({ message: "올바르지 않은 요청입니다." });
+      throw new BadRequestException({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: `올바르지 않은 요청입니다.`,
+        error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+      });
     }
   }
 
   @Get("mainfeed")
-  async mainfeed(@Req() req, @Res() res) {
+  async mainfeed(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -162,7 +194,11 @@ export class PostsController {
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -181,7 +217,11 @@ export class PostsController {
     }
 
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       const postDatas = await this.postsService.searchAll();
 
@@ -195,13 +235,17 @@ export class PostsController {
           message: "전체 포스트 및 랭킹순 포스트 가져오기 완료",
         });
       } else {
-        res.status(400).send({ message: "올바르지 않은 요청입니다." });
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `올바르지 않은 요청입니다.`,
+          error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+        });
       }
     }
   }
 
   @Post("change-thumbsup")
-  async change_thumbsup(@Req() req, @Res() res) {
+  async change_thumbsup(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -211,7 +255,11 @@ export class PostsController {
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -229,7 +277,11 @@ export class PostsController {
       }
     }
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       const postDatas = await this.postsService.changeThumbsUp(
         decoded.user.id,
@@ -240,8 +292,8 @@ export class PostsController {
     }
   }
 
-  @Post("searchThumbsUp")
-  async searchThumbsUp(@Req() req, @Res() res) {
+  @Post("search-thumbsup")
+  async searchThumbsUp(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -251,7 +303,11 @@ export class PostsController {
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -269,14 +325,22 @@ export class PostsController {
       }
     }
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       const searchDatas = await this.postsService.searchThumbsUp(
         decoded.user.id,
         req.body.post_PK,
       );
       if (searchDatas === undefined) {
-        res.status(400).send("유효하지 않은 입력입니다.");
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `올바르지 않은 요청입니다.`,
+          error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+        });
       } else {
         res.status(200).send(searchDatas);
       }
@@ -297,7 +361,11 @@ export class PostsController {
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh,
@@ -317,13 +385,21 @@ export class PostsController {
     }
 
     if (decoded === null) {
-      return res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     }
 
     const getPostingData = await this.postsService.getPost(decoded.user.id);
     // console.log(getPostingData);
     if (getPostingData === false) {
-      return res.status(404).send("유효한 유저가 아닙니다.");
+      throw new NotFoundException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `유효한 유저가 아닙니다.`,
+        error: `상태코드:${HttpStatus.NOT_FOUND}`,
+      });
     } else if (getPostingData.postdata.length === 0) {
       return res.status(200).send({
         message: "작성된 포스팅이 없습니다.",
@@ -341,7 +417,7 @@ export class PostsController {
 
   // 컨트롤러 내에서 accessToken 복호화
   @Delete("myfeed")
-  async deletePost(@Req() req, @Res() res) {
+  async deletePost(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -351,7 +427,11 @@ export class PostsController {
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -369,7 +449,11 @@ export class PostsController {
       }
     }
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       // console.log(decoded);
       const deletePostingData = await this.postsService.deletePost(
@@ -380,13 +464,17 @@ export class PostsController {
       if (deletePostingData === true) {
         res.status(200).send("포스팅 삭제 성공");
       } else {
-        res.status(400).send("포스팅 삭제 실패");
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `포스팅 삭제 실패.`,
+          error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+        });
       }
     }
   }
 
   @Patch("myfeed")
-  async patchPost(@Req() req, @Res() res) {
+  async patchPost(@Req() req, @Res() res): Promise<any> {
     let decoded = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
@@ -396,7 +484,11 @@ export class PostsController {
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
-        return res.status(401).send("접근 권한이 없습니다.");
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: `접근 권한이 없습니다.`,
+          error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+        });
       } else {
         const accessToken = await this.tokenService.generateAccessToken(
           refresh.user,
@@ -414,7 +506,11 @@ export class PostsController {
       }
     }
     if (decoded === null) {
-      res.status(401).send("접근 권한이 없습니다.");
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: `접근 권한이 없습니다.`,
+        error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
+      });
     } else {
       console.log(decoded.user);
       const patchPostingData = await this.postsService.patchPost(
@@ -425,7 +521,11 @@ export class PostsController {
       if (patchPostingData === true) {
         res.status(200).send("포스팅 업데이트 성공");
       } else {
-        res.status(400).send("포스팅 업데이트 실패");
+        throw new BadRequestException({
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: `포스팅 업데이트 실패`,
+          error: `상태코드:${HttpStatus.BAD_REQUEST}`,
+        });
       }
     }
   }
