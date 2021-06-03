@@ -17,6 +17,8 @@ import {
 import { TokenService } from "src/auth/token.service";
 import { CreateDataDto } from "src/dtos/create-data.dto";
 import { Posts } from "src/entities/Posts.entity";
+import { Tags } from "src/entities/Tags.entity";
+import { Users } from "src/entities/Users.entity";
 import { JwtAuthGuard } from "src/guards/jwt-auth.guard";
 import { PostingAuthGuard } from "src/guards/posting-auth.guard";
 import { UsersService } from "src/users/users.service";
@@ -37,11 +39,11 @@ export class PostsController {
   // @UseGuards(PostingAuthGuard)
   @Post("posting")
   async posting(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
 
@@ -52,7 +54,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -95,7 +97,9 @@ export class PostsController {
 
   @Post("search-user")
   async searchuser(@Body() body, @Res() res): Promise<any> {
-    const postDatas = await this.postsService.searchUser(body.user_nickname);
+    const postDatas: Posts[] = await this.postsService.searchUser(
+      body.user_nickname,
+    );
 
     if (postDatas !== undefined) {
       res.status(200).send({
@@ -114,7 +118,7 @@ export class PostsController {
 
   @Post("search-job")
   async searchJob(@Body() body, @Res() res): Promise<any> {
-    const postDatas = await this.postsService.searchJob(body.user_job);
+    const postDatas: Posts[] = await this.postsService.searchJob(body.user_job);
 
     if (postDatas !== undefined) {
       res.status(200).send({
@@ -133,11 +137,13 @@ export class PostsController {
 
   @Post("search-tag")
   async searchTag(@Body() body, @Res() res): Promise<any> {
-    const tagDatas = await this.postsService.searchTagPostId(body.tag);
+    const tagDatas: Tags[] = await this.postsService.searchTagPostId(body.tag);
 
-    const tagNumbers = await this.postsService.searchTagPostIdNumber(tagDatas);
+    const tagNumbers: number[] = await this.postsService.searchTagPostIdNumber(
+      tagDatas,
+    );
 
-    const postDatas = await this.postsService.searchTag(tagNumbers);
+    const postDatas: Posts[] = await this.postsService.searchTag(tagNumbers);
 
     // console.log(postDatas[0].posts.id);
 
@@ -158,8 +164,8 @@ export class PostsController {
 
   @Post("search-popular")
   async searchPopular(@Body() body, @Res() res): Promise<any> {
-    let postDatas;
-    const user_job = body.user_job;
+    let postDatas: Posts[];
+    const user_job: string = body.user_job;
 
     if (user_job !== undefined) {
       postDatas = await this.postsService.searchPopular(user_job);
@@ -185,11 +191,11 @@ export class PostsController {
 
   @Get("mainfeed")
   async mainfeed(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       // console.log("refresh", refresh);
@@ -200,7 +206,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -223,9 +229,9 @@ export class PostsController {
         error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
       });
     } else {
-      const postDatas = await this.postsService.searchAll();
+      const postDatas: Posts[] = await this.postsService.searchAll();
 
-      const ranking = await this.postsService.searchRank();
+      const ranking: Users[] = await this.postsService.searchRank();
 
       // console.log(postDatas[0].posts.id);
       if (postDatas !== undefined && ranking !== undefined) {
@@ -246,11 +252,11 @@ export class PostsController {
 
   @Post("change-thumbsup")
   async change_thumbsup(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       //console.log("refresh", refresh);
@@ -261,7 +267,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -283,7 +289,7 @@ export class PostsController {
         error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
       });
     } else {
-      const postDatas = await this.postsService.changeThumbsUp(
+      const postDatas: string = await this.postsService.changeThumbsUp(
         decoded.user.id,
         req.body.post_PK,
       );
@@ -294,11 +300,11 @@ export class PostsController {
 
   @Post("search-thumbsup")
   async searchThumbsUp(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       //console.log("refresh", refresh);
@@ -309,7 +315,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -331,7 +337,7 @@ export class PostsController {
         error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
       });
     } else {
-      const searchDatas = await this.postsService.searchThumbsUp(
+      const searchDatas: boolean = await this.postsService.searchThumbsUp(
         decoded.user.id,
         req.body.post_PK,
       );
@@ -350,13 +356,13 @@ export class PostsController {
   @Get("myfeed")
   async getPost(@Req() req, @Res() res): Promise<any> {
     // console.log(req.cookies);
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     // console.log("decoded:", decoded);
 
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       // console.log("refresh", refresh);
@@ -367,7 +373,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh,
         );
         decoded = refresh;
@@ -392,7 +398,9 @@ export class PostsController {
       });
     }
 
-    const getPostingData = await this.postsService.getPost(decoded.user.id);
+    const getPostingData: any = await this.postsService.getPost(
+      decoded.user.id,
+    );
     // console.log(getPostingData);
     if (getPostingData === false) {
       throw new NotFoundException({
@@ -418,11 +426,11 @@ export class PostsController {
   // 컨트롤러 내에서 accessToken 복호화
   @Delete("myfeed")
   async deletePost(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       //console.log("refresh", refresh);
@@ -433,7 +441,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -456,7 +464,7 @@ export class PostsController {
       });
     } else {
       // console.log(decoded);
-      const deletePostingData = await this.postsService.deletePost(
+      const deletePostingData: boolean = await this.postsService.deletePost(
         req.body.post_PK,
         decoded.user.id,
       );
@@ -475,11 +483,11 @@ export class PostsController {
 
   @Patch("myfeed")
   async patchPost(@Req() req, @Res() res): Promise<any> {
-    let decoded = await this.tokenService.resolveAccessToken(
+    let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
     if (decoded === null) {
-      const refresh = await this.tokenService.decodeRefreshToken(
+      const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken,
       );
       // console.log("refresh", refresh);
@@ -490,7 +498,7 @@ export class PostsController {
           error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
         });
       } else {
-        const accessToken = await this.tokenService.generateAccessToken(
+        const accessToken: string = await this.tokenService.generateAccessToken(
           refresh.user,
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
@@ -513,7 +521,7 @@ export class PostsController {
       });
     } else {
       console.log(decoded.user);
-      const patchPostingData = await this.postsService.patchPost(
+      const patchPostingData: boolean = await this.postsService.patchPost(
         decoded.user.id,
         req.body.postdatas,
       );
