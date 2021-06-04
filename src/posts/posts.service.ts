@@ -397,7 +397,7 @@ export class PostsService {
     userId.total_posting = userId.total_posting - 1;
     userId.total_learning_time =
       userId.total_learning_time - postId.today_learning_time;
-
+    userId.total_thumbsup = userId.total_thumbsup - postId.thumbs_up;
     if (postId) {
       await this.postsRepository.delete(postId.id);
       await this.usersRepository.save(userId);
