@@ -6,6 +6,7 @@ import { CreateUserDto } from "src/dtos/create-user.dto";
 import { UsersService } from "src/users/users.service";
 import { Users } from "src/entities/Users.entity";
 import { config } from "dotenv";
+
 config();
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,18 +22,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     this.tokenService = tokenService;
     this.usersService = usersService;
   }
-  async validate(payload: any): Promise<any> {
-    /*        const accessTokenIat = this.tokenService.resolveAccessToken(
-      payload.accessToken
-    );
-    console.log("decodedToken", accessTokenIat);
-    if (accessTokenIat === null) {
-      throw new UnauthorizedException("유효하지 않은 토큰입니다.");
-    } */
+  async validate(payload: any) {
+    // const accessTokenIat = this.tokenService.resolveAccessToken(
+    //   payload.accessToken,
+    // );
+
+    // if (accessTokenIat === null) {
+    //   throw new UnauthorizedException("유효하지 않은 토큰입니다.");
+    // }
 
     const { user_id }: any = payload;
     const user: Users = await this.usersService.findOne(user_id);
-    //console.log(payload);
+
     if (!user) {
       throw new UnauthorizedException("유효하지 않은 요청입니다.");
     }

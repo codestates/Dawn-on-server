@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>,
+    private likesRepository: Repository<Likes>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -185,6 +185,7 @@ export class PostsService {
       newTodoOBJ.todo_comment = el.todo_comment;
       newTodoOBJ.start_time = el.start_time;
       newTodoOBJ.checked = false;
+      newTodoOBJ.todo_PK = el.todo_PK;
 
       newTodoOBJ.posts = postId.id;
 
@@ -397,7 +398,7 @@ export class PostsService {
     userId.total_posting = userId.total_posting - 1;
     userId.total_learning_time =
       userId.total_learning_time - postId.today_learning_time;
-
+    userId.total_thumbsup = userId.total_thumbsup - postId.thumbs_up;
     if (postId) {
       await this.postsRepository.delete(postId.id);
       await this.usersRepository.save(userId);
@@ -422,7 +423,7 @@ export class PostsService {
   async updateTables(
     table: string,
     postData: any,
-    reqData: any,
+    reqData: any
   ): Promise<void> {
     let tablesNumber: number[] = [];
     let reqtodos: Todos = reqData.todos;
@@ -480,7 +481,7 @@ export class PostsService {
         const tags: Tags = await this.tagsRepository.findOne({
           id: tablesNumber[i],
         });
-        /*       console.log(reqtags); */
+        // console.log(reqtags);
         tags.tag = reqtags[i];
 
         await this.tagsRepository.save(tags);
@@ -499,7 +500,7 @@ export class PostsService {
     // 관계설정을 해두면, 객체형식으로 대체 할수는 있지만 객체안에 직접접근은 불가
     if (check) {
       if (postId !== undefined) {
-        console.log(postingData.comment);
+        // console.log(postingData.comment);
         postId.comment = postingData.comment;
         postId.memo = postingData.memo;
         postId.sticker = postingData.sticker;
@@ -551,7 +552,7 @@ export class PostsService {
 //   memo: "적재-잘지내, 슬프지만 오늘도 달린다.";
 // };
 
-// 너무 아깝다.. ㅠㅠ 관계로 불러오는 법을 너무 늦게 알았다...
+// 너무 아깝다.. ㅠㅠ 릴레이션으로 불러오는 법을 너무 늦게 알았다...
 // async searchJob(user_job: string): Promise<any> {
 //   const userdata = await this.usersRepository.find({ user_job: user_job });
 

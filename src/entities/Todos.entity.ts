@@ -25,6 +25,9 @@ export class Todos {
   subject: string;
   //상단에 쓰는 본인 글
 
+  @Column()
+  todo_PK: string;
+
   @Column({ default: false })
   checked: boolean | null;
 
