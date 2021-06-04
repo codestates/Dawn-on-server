@@ -61,11 +61,11 @@ export class PostsController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -213,11 +213,11 @@ export class PostsController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -274,11 +274,11 @@ export class PostsController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -322,11 +322,11 @@ export class PostsController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -375,18 +375,18 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh,
+          refresh.user,
         );
         decoded = refresh;
         // console.log("decoded:", decoded);
 
         await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -453,11 +453,11 @@ export class PostsController {
 
         await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -510,11 +510,11 @@ export class PostsController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }

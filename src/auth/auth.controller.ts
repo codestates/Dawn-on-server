@@ -66,19 +66,19 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
 
     // // 메인화면 구성에 따라서 수정.
@@ -111,20 +111,20 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
       // maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
       maxAge: 1000 * 60 * 60 * 2,
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
 
     res.status(200).send({
@@ -154,11 +154,11 @@ export class AuthController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -187,11 +187,11 @@ export class AuthController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -230,17 +230,17 @@ export class AuthController {
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
     const { user }: any = decoded;
-    res.clearCookie("refreshToken");
-    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken", { domain: "dawn-on.club" });
+    res.clearCookie("accessToken", { domain: "dawn-on.club" });
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
     res.status(200).send("로그아웃 성공");
@@ -265,19 +265,19 @@ export class AuthController {
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
       maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      // domain: 'localhost:3000',
+      domain: "dawn-on.club",
       path: "/",
-      // secure: true,
+      secure: true,
       httpOnly: true,
-      // sameSite: 'None',
+      sameSite: "None",
     });
 
     // // 메인화면 구성에 따라서 수정.
@@ -311,11 +311,11 @@ export class AuthController {
 
         await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
