@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>,
+    private likesRepository: Repository<Likes>
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -185,6 +185,7 @@ export class PostsService {
       newTodoOBJ.todo_comment = el.todo_comment;
       newTodoOBJ.start_time = el.start_time;
       newTodoOBJ.checked = false;
+      newTodoOBJ.todo_PK = el.todo_PK;
 
       newTodoOBJ.posts = postId.id;
 
@@ -397,7 +398,7 @@ export class PostsService {
     userId.total_posting = userId.total_posting - 1;
     userId.total_learning_time =
       userId.total_learning_time - postId.today_learning_time;
-
+    userId.total_thumbsup = userId.total_thumbsup - postId.thumbs_up;
     if (postId) {
       await this.postsRepository.delete(postId.id);
       await this.usersRepository.save(userId);
@@ -422,7 +423,7 @@ export class PostsService {
   async updateTables(
     table: string,
     postData: any,
-    reqData: any,
+    reqData: any
   ): Promise<void> {
     let tablesNumber: number[] = [];
     let reqtodos: Todos = reqData.todos;
