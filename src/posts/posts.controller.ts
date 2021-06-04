@@ -355,11 +355,12 @@ export class PostsController {
 
   @Get("myfeed")
   async getPost(@Req() req, @Res() res): Promise<any> {
-    // console.log(req.cookies);
+    console.log("엑세스 토큰: ", req.cookies.accessToken);
+
     let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken,
     );
-    // console.log("decoded:", decoded);
+    console.log("decoded:", decoded);
 
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
@@ -379,7 +380,7 @@ export class PostsController {
         decoded = refresh;
         // console.log("decoded:", decoded);
 
-        res.cookie("accessToken", accessToken, {
+        await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
           // domain: 'localhost:3000',
           path: "/",
@@ -397,12 +398,16 @@ export class PostsController {
         error: `상태코드:${HttpStatus.UNAUTHORIZED}`,
       });
     }
+    let getPostingData: any;
+    if (decoded.user.id !== undefined) {
+      getPostingData = await this.postsService.getPost(decoded.user.id);
+    } else if (decoded.user.id === undefined) {
+      getPostingData = await this.postsService.getPost(decoded.user.user.id);
+    }
 
-    const getPostingData: any = await this.postsService.getPost(
-      decoded.user.id,
-    );
     // console.log(getPostingData);
     if (getPostingData === false) {
+      console.log(req.cookies);
       throw new NotFoundException({
         statusCode: HttpStatus.NOT_FOUND,
         message: `유효한 유저가 아닙니다.`,
@@ -446,7 +451,7 @@ export class PostsController {
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
-        res.cookie("accessToken", accessToken, {
+        await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
           // domain: 'localhost:3000',
           path: "/",
