@@ -29,7 +29,7 @@ export class PostsController {
   constructor(
     private usersService: UsersService,
     private postsService: PostsService,
-    private tokenService: TokenService,
+    private tokenService: TokenService
   ) {
     this.usersService = usersService;
     this.postsService = postsService;
@@ -40,11 +40,11 @@ export class PostsController {
   @Post("posting")
   async posting(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
 
       if (refresh === null) {
@@ -55,17 +55,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -79,7 +79,7 @@ export class PostsController {
     } else {
       const newPost = await this.postsService.posting(
         decoded.user.id,
-        req.body.postdatas,
+        req.body.postdatas
       );
 
       if (newPost !== undefined) {
@@ -98,7 +98,7 @@ export class PostsController {
   @Post("search-user")
   async searchuser(@Body() body, @Res() res): Promise<any> {
     const postDatas: Posts[] = await this.postsService.searchUser(
-      body.user_nickname,
+      body.user_nickname
     );
 
     if (postDatas !== undefined) {
@@ -140,7 +140,7 @@ export class PostsController {
     const tagDatas: Tags[] = await this.postsService.searchTagPostId(body.tag);
 
     const tagNumbers: number[] = await this.postsService.searchTagPostIdNumber(
-      tagDatas,
+      tagDatas
     );
 
     const postDatas: Posts[] = await this.postsService.searchTag(tagNumbers);
@@ -192,11 +192,11 @@ export class PostsController {
   @Get("mainfeed")
   async mainfeed(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
@@ -207,17 +207,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -253,11 +253,11 @@ export class PostsController {
   @Post("change-thumbsup")
   async change_thumbsup(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
@@ -268,17 +268,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -291,7 +291,7 @@ export class PostsController {
     } else {
       const postDatas: string = await this.postsService.changeThumbsUp(
         decoded.user.id,
-        req.body.post_PK,
+        req.body.post_PK
       );
 
       res.status(200).send({ thumbs_up: postDatas });
@@ -301,11 +301,11 @@ export class PostsController {
   @Post("search-thumbsup")
   async searchThumbsUp(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
@@ -316,17 +316,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -339,7 +339,7 @@ export class PostsController {
     } else {
       const searchDatas: boolean = await this.postsService.searchThumbsUp(
         decoded.user.id,
-        req.body.post_PK,
+        req.body.post_PK
       );
       if (searchDatas === undefined) {
         throw new BadRequestException({
@@ -357,13 +357,13 @@ export class PostsController {
   async getPost(@Req() req, @Res() res): Promise<any> {
     // console.log(req.cookies);
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     // console.log("decoded:", decoded);
 
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
@@ -374,18 +374,18 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh,
+          refresh.user
         );
         decoded = refresh;
         // console.log("decoded:", decoded);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -399,7 +399,7 @@ export class PostsController {
     }
 
     const getPostingData: any = await this.postsService.getPost(
-      decoded.user.id,
+      decoded.user.id
     );
     // console.log(getPostingData);
     if (getPostingData === false) {
@@ -427,11 +427,11 @@ export class PostsController {
   @Delete("myfeed")
   async deletePost(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       //console.log("refresh", refresh);
       if (refresh === null) {
@@ -442,17 +442,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -466,7 +466,7 @@ export class PostsController {
       // console.log(decoded);
       const deletePostingData: boolean = await this.postsService.deletePost(
         req.body.post_PK,
-        decoded.user.id,
+        decoded.user.id
       );
       // console.log(deletePostingData);
       if (deletePostingData === true) {
@@ -484,11 +484,11 @@ export class PostsController {
   @Patch("myfeed")
   async patchPost(@Req() req, @Res() res): Promise<any> {
     let decoded: any = await this.tokenService.resolveAccessToken(
-      req.cookies.accessToken,
+      req.cookies.accessToken
     );
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       );
       // console.log("refresh", refresh);
       if (refresh === null) {
@@ -499,17 +499,17 @@ export class PostsController {
         });
       } else {
         const accessToken: string = await this.tokenService.generateAccessToken(
-          refresh.user,
+          refresh.user
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
-          // domain: 'localhost:3000',
+          domain: "dawn-on.club",
           path: "/",
-          // secure: true,
+          secure: true,
           httpOnly: true,
-          // sameSite: 'None',
+          sameSite: "None",
         });
       }
     }
@@ -523,7 +523,7 @@ export class PostsController {
       console.log(decoded.user);
       const patchPostingData: boolean = await this.postsService.patchPost(
         decoded.user.id,
-        req.body.postdatas,
+        req.body.postdatas
       );
       // console.log(patchPostingData);
       if (patchPostingData === true) {
