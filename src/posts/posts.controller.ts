@@ -60,7 +60,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -104,7 +104,7 @@ export class PostsController {
     if (postDatas !== undefined) {
       res.status(200).send({
         user_nickname: body.user_nickname,
-        postings: postDatas,
+        postDatas: postDatas,
         message: "닉네임별 포스트 데이터 가져오기 완료",
       });
     } else {
@@ -212,7 +212,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -273,7 +273,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -321,7 +321,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -380,7 +380,7 @@ export class PostsController {
         // console.log("decoded:", decoded);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -447,7 +447,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -504,7 +504,7 @@ export class PostsController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
