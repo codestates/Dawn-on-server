@@ -65,7 +65,7 @@ export class AuthController {
     );
 
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -73,7 +73,7 @@ export class AuthController {
       sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
-      maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+      maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -110,7 +110,7 @@ export class AuthController {
     );
 
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7, //7일간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -118,8 +118,7 @@ export class AuthController {
       sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
-      // maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
-      maxAge: 1000 * 60 * 60 * 2,
+      maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -139,6 +138,9 @@ export class AuthController {
     let decoded: any = await this.tokenService.resolveAccessToken(
       req.cookies.accessToken
     );
+
+    let userDatas = await this.usersRepository.findOne({ id: decoded.id });
+    // console.log(userDatas)
     if (decoded === null) {
       const refresh: any = await this.tokenService.decodeRefreshToken(
         req.cookies.refreshToken
@@ -162,7 +164,7 @@ export class AuthController {
         });
       }
     }
-    const user: Users = decoded.user;
+    const user: Users = userDatas;
     res.status(200).send({ user, message: "개인정보 가져오기 완료" });
   }
 
@@ -186,7 +188,7 @@ export class AuthController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -197,7 +199,7 @@ export class AuthController {
     }
 
     const user_PK: Users = await this.usersRepository.findOne({
-      user_id: decoded.user.user_id,
+      id: decoded.user.id,
     });
 
     // console.log("user_pk:", user_PK);
@@ -206,6 +208,17 @@ export class AuthController {
     if (updateUser === false) {
       res.status(400).send("중복된 닉네임 입니다.");
     } else {
+      /*     const accessToken: string = await this.tokenService.generateAccessToken(
+        user_PK
+      );
+             res.cookie("accessToken", accessToken, {
+          maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+          //domain: "dawn-on.club",
+          path: "/",
+          // secure: true,
+          httpOnly: true,
+          //sameSite: "None",
+        }); */
       res.status(200).send({ updateUser, message: "유저 정보 업데이트 완료" });
     }
   }
@@ -229,7 +242,7 @@ export class AuthController {
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
         res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -239,8 +252,8 @@ export class AuthController {
       }
     }
     const { user }: any = decoded;
-    res.clearCookie("refreshToken", { domain: "dawn-on.club" });
-    res.clearCookie("accessToken", { domain: "dawn-on.club" });
+    res.clearCookie("refreshToken" /* { domain: "dawn-on.club" } */);
+    res.clearCookie("accessToken" /* { domain: "dawn-on.club" } */);
     await this.tokenService.deleteRefreshTokenFromUser(user);
 
     res.status(200).send("로그아웃 성공");
@@ -264,7 +277,7 @@ export class AuthController {
     );
 
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7일간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -272,7 +285,7 @@ export class AuthController {
       sameSite: "None",
     });
     res.cookie("accessToken", accessToken, {
-      maxAge: 1000 * 60 * 60 * 2, // 15분 간유지
+      maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
       domain: "dawn-on.club",
       path: "/",
       secure: true,
@@ -310,7 +323,7 @@ export class AuthController {
         verify = await this.tokenService.resolveAccessToken(accessToken);
 
         await res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간
+          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
           domain: "dawn-on.club",
           path: "/",
           secure: true,
