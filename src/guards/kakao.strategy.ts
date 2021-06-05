@@ -25,7 +25,8 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<any> {
-    const { nickname, profileImageURL } = profile._json.kakao_account.profile;
+    const { nickname, profileImageURL }: any =
+      profile._json.kakao_account.profile;
     //console.log(profile._json.kakao_account.profile);
     //console.log(accessToken);
     const users: any = {
