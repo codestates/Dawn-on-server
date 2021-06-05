@@ -81,13 +81,23 @@ export class AuthService {
 
   async validateOAuthLogin(userProfile: any, provider: string): Promise<any> {
     const { user_id, user_img, user_nickname, user_job }: any = userProfile;
-    let user: Users = await this.usersService.findOne(`${user_id}[AUTH]`);
+    let user: Users;
+    if (provider === "kakao") {
+      user = await this.usersService.findOne(`${user_id}[KAKAO]`);
+    } else if (provider === "google") {
+      user = await this.usersService.findOne(`${user_id}[GOOGLE]`);
+    }
 
     if (!user) {
       const newUser: Users = new Users();
-      newUser.user_id = `${user_id}[AUTH]`;
+      if (provider === "kakao") {
+        newUser.user_id = `${user_id}[KAKAO]`;
+        newUser.user_nickname = `${user_id}[KAKAO]`;
+      } else if (provider === "google") {
+        newUser.user_id = `${user_id}[GOOGLE]`;
+        newUser.user_nickname = `${user_id}[GOOGLE]`;
+      }
       newUser.user_password = await hash(Math.random().toString(36), 10);
-      newUser.user_nickname = `${user_nickname}`; // 초기 닉네임은 그냥 아이디로.
       newUser.user_job = user_job;
       newUser.user_img = user_img;
       newUser.provider = provider;
