@@ -380,13 +380,8 @@ export class PostsController {
         decoded = refresh;
         // console.log("decoded:", decoded);
 
-<<<<<<< HEAD
-        res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
-=======
         await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
->>>>>>> 49b3e8200c7b7f6e6dea0415a8a7d47c0fd5ed83
           domain: "dawn-on.club",
           path: "/",
           secure: true,
@@ -456,13 +451,8 @@ export class PostsController {
         );
         decoded = await this.tokenService.resolveAccessToken(accessToken);
 
-<<<<<<< HEAD
-        res.cookie("accessToken", accessToken, {
-          maxAge: 1000 * 60 * 60 * 2, // 2시간 유지
-=======
         await res.cookie("accessToken", accessToken, {
           maxAge: 1000 * 60 * 60 * 2, // 2시간
->>>>>>> 49b3e8200c7b7f6e6dea0415a8a7d47c0fd5ed83
           domain: "dawn-on.club",
           path: "/",
           secure: true,
