@@ -159,8 +159,11 @@ export class PostsService {
     const newTodoOBJ: Todos = new Todos();
 
     const newTagOBJ: Tags = new Tags();
+    const curr = new Date();
+    const utc = curr.getTime() + curr.getTimezoneOffset() * 60 * 1000;
+    const KR = 9 * 60 * 60 * 1000;
 
-    newPostOBJ.date = new Date();
+    newPostOBJ.date = new Date(utc + KR);
     newPostOBJ.back_color = postdatas.back_color;
     newPostOBJ.d_day = 20; //아직 미정
     newPostOBJ.sticker = postdatas.sticker;
