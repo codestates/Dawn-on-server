@@ -43,7 +43,7 @@ export class PostsService {
     private postsRepository: Repository<Posts>,
 
     @InjectRepository(Likes)
-    private likesRepository: Repository<Likes>
+    private likesRepository: Repository<Likes>,
   ) {
     this.usersRepository = usersRepository;
     this.usersService = usersService;
@@ -423,7 +423,7 @@ export class PostsService {
   async updateTables(
     table: string,
     postData: any,
-    reqData: any
+    reqData: any,
   ): Promise<void> {
     let tablesNumber: number[] = [];
     let reqtodos: Todos = reqData.todos;
@@ -492,7 +492,7 @@ export class PostsService {
   async patchPost(decode_user_id: number, postingData: any): Promise<boolean> {
     const postId: Posts = await this.postsRepository.findOne({
       relations: ["users", "todos", "tags"],
-      where: { id: postingData.post_PK },
+      where: { id: postingData.id },
     });
     const check: boolean = await this.checkPK(decode_user_id, postId);
     //console.log(postId.todos);
@@ -504,9 +504,46 @@ export class PostsService {
         postId.comment = postingData.comment;
         postId.memo = postingData.memo;
         postId.sticker = postingData.sticker;
+
         await this.postsRepository.save(postId);
-        await this.updateTables("todos", postId, postingData);
-        await this.updateTables("tags", postId, postingData);
+
+        let todos: number[] = [];
+        let tags: number[] = [];
+
+        for (let i = 0; i < postingData.todos.length; i++) {
+          todos.push(postingData.todos[i].id);
+        }
+
+        for (let i = 0; i < postingData.tags.length; i++) {
+          tags.push(postingData.tags[i].id);
+        }
+        const todosData = postingData.todos;
+        const tagsData = postingData.tags;
+
+        for (let i = 0; i < todos.length; i++) {
+          const todoId: Todos = await this.todosRepository.findOne({
+            id: todos[i],
+          });
+          todoId.learning_time = todosData[i].learning_time;
+          todoId.box_color = todosData[i].box_color;
+          todoId.todo_comment = todosData[i].todo_comment;
+          todoId.subject = todosData[i].subject;
+          todoId.start_time = todosData[i].start_time;
+          todoId.checked = todosData[i].checked;
+          await this.todosRepository.save(todoId);
+        }
+
+        for (let i = 0; i < tags.length; i++) {
+          const tagId: Tags = await this.tagsRepository.findOne({
+            id: tags[i],
+          });
+          tagId.tag = tagsData[i].tag;
+
+          await this.tagsRepository.save(tagId);
+        }
+
+        // await this.updateTables("todos", postId, postingData.todos);
+        // await this.updateTables("tags", postId, postingData.tags);
         // postId.today_learning_time = postingData.today_learning_time;
 
         return true;
