@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
     private usersService: UsersService,
 
-    private tokenService: TokenService
+    private tokenService: TokenService,
   ) {
     this.usersRepository = usersRepository;
     this.jwtService = jwtService;
@@ -92,10 +92,10 @@ export class AuthService {
       const newUser: Users = new Users();
       if (provider === "kakao") {
         newUser.user_id = `${user_id}[KAKAO]`;
-        newUser.user_nickname = `${user_id}[KAKAO]`;
+        newUser.user_nickname = `${user_id}[K]`;
       } else if (provider === "google") {
         newUser.user_id = `${user_id}[GOOGLE]`;
-        newUser.user_nickname = `${user_id}[GOOGLE]`;
+        newUser.user_nickname = `${user_id}[G]`;
       }
       newUser.user_password = await hash(Math.random().toString(36), 10);
       newUser.user_job = user_job;
