@@ -44,6 +44,11 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
 ## 📌 Roles
 
 
+<br />
+
+**토글을 클릭해주세요!**
+
+
 <details>
 <summary>전영호</summary>
 
@@ -53,7 +58,7 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
 <img src=https://img.shields.io/badge/position-back--end-black?style=for-the-badge />
 
 - Position: Team Leader, Back-End
-- Stack: `Typescript`, `Node.js`, `` ``
+- Stack: `Typescript`, `TypeORM`, `Node.js`,  `NestJS`, `MySql`,  `PassPort`, `JWT`
 - Contributions
     - **Basic**
         - 아이디어 기획
@@ -61,26 +66,16 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
         - 플로우차트 작성
         - WIKI
         - READ.ME
+        - 스키마에 따른 관계 설정 및 엔티티 생성
     - **Post컨트롤러**
         - 인기순,최신순 & 직업,닉네임,태그별 검색[Get]
         - 좋아요[Get]
         - 포스팅[Get]
         - 개인피드[Get,Patch,Delete]
         - 모아보기피드[Get]
-    - **Auth컨트롤러**
-        - 회원가입[Post]
-        - 로그인[Post]
-        - 소셜로그인[Get]
-        - 로그아웃[Post]
-        - 마이페이지[Get,Patch]
     - **Guard**
         - 로컬 로그인
         - 소셜 로그인:[구글,카카오]
-    - **Database**
-        - 스키마에 따른 관계 설정 및 엔티티 생성
-    - **Deploy**
-        - AWS[EC2,RDS,S3,Cloud Front,Route53,Certificate Manager]
-
 
 </details>
 
@@ -95,7 +90,7 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
 <img src=https://img.shields.io/badge/position-back--end-black?style=for-the-badge />
 
 - Position: Team Member, Back-End
-- Stack: `Typescript`, `Node.js`, `` ``
+- Stack: `Typescript`, `TypeORM`, `Node.js`,  `NestJS`, `MySql`, `AWS` `PassPort` `JWT`
 - Contributions
     - **Basic**
         - 아이디어 기획
@@ -103,23 +98,13 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
         - 플로우차트 작성
         - WIKI
         - READ.ME
-    - **Post컨트롤러**
-        - 인기순,최신순 & 직업,닉네임,태그별 검색[Get]
-        - 좋아요[Get]
-        - 포스팅[Get]
-        - 개인피드[Get,Patch,Delete]
-        - 모아보기피드[Get]
+        - 스키마에 따른 관계 설정 및 엔티티 생성
     - **Auth컨트롤러**
         - 회원가입[Post]
         - 로그인[Post]
         - 소셜로그인[Get]
         - 로그아웃[Post]
         - 마이페이지[Get,Patch]
-    - **Guard**
-        - 로컬 로그인
-        - 소셜 로그인:[구글,카카오]
-    - **Database**
-        - 스키마에 따른 관계 설정 및 엔티티 생성
     - **Deploy**
         - AWS[EC2,RDS,S3,Cloud Front,Route53,Certificate Manager]
 
