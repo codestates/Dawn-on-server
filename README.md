@@ -126,17 +126,30 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
 - Position: Team Member, Front-End
 - Stack: `Typescript`, ``, `` ``
 - Contributions
-    - **Basic**
-        - 아이디어 기획
-        - 와이어 프레임 작성
-        - 플로우차트 작성
-        - WIKI
-        - READ.ME
-    - **Front-End**
-        - 와이어프레임 설계
-- 
-- 
-- 
+- **Basic**
+    - 아이디어 기획
+    - 와이어 프레임 작성
+    - 플로우차트 작성
+    - WIKI
+    - READ.ME
+- Landing page
+    - 전체 레이아웃 설계 및 디자인
+    - 스크롤 애니메이션 구현
+- Custom planner
+    - Planner 제작 기능 구현
+        - 전체 레이아웃 및 CSS 적용
+        - 새로운 Todo카드 생성 기능 구현
+        - 스티커 및 배경 컬러, 패턴 선택 기능 구현
+        - 시간 선택에 따라 동적으로 Todo card 크기 변경
+        - 업로드 시 서버 요청 구현
+    - Planner 수정 기능 구현
+    - 반응형 구현
+- Myfeed
+    - ExplorePost Viewer 컴포넌트 디자인
+    - Mypost Viewer
+        - 코멘트 수정 기능 구현
+        - 스티커 및 Todo 카드 수정 기능 구현
+        - 체크박스 서버 요청 구현
 </details>
 
 <br/>
