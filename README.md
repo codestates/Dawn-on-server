@@ -2,7 +2,7 @@
 ![](https://img.shields.io/badge/Team-Done:up-blue?style=for-the-badge)
 # Dawn:on
 
-<img src="https://user-images.githubusercontent.com/75114956/120579352-52355c80-c462-11eb-9837-6164ccdee041.jpeg?raw=true"  width="850" height="500">
+<img width="1000" alt="2021-06-08_7 28 48" src="https://user-images.githubusercontent.com/75114956/121127417-b42c0280-c864-11eb-8639-d13d72c5296d.png">
 
 
 *************
