@@ -58,7 +58,7 @@ Dawn:on은 이 두 가지를 모두 제공합니다!💡<br />
 <img src=https://img.shields.io/badge/position-back--end-black?style=for-the-badge />
 
 - Position: Team Leader, Back-End
-- Stack: `Typescript`, `TypeORM`, `Node.js`,  `NestJS`, `MySql`,  `PassPort`, `JWT`
+- Stack: `Typescript`, `TypeORM`, `Node.js`,  `NestJS`, `MySql`,  `PassPort`, `JWT`, `AWS`
 - Contributions
     - **Basic**
         - 아이디어 기획
